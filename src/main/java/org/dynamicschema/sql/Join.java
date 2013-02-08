@@ -46,14 +46,14 @@ public class Join {
 	}
 	
 	public String joinKeyword() {
-		return SqlConstants.JOIN;
+		return Sql.JOIN;
 	}
 	
 	@Override
 	public String toString() {
 		String join = joinKeyword() + " " + Joiner.on(" ").join(tables);
 		if(getOn() != null)
-			join += " " + SqlConstants.ON + " " + getOn();
+			join += " " + Sql.ON + " " + getOn();
 		return join;
 	}
 
@@ -68,7 +68,7 @@ public class Join {
 
 		@Override
 		public String joinKeyword() {
-			return SqlConstants.INNER_JOIN;
+			return Sql.INNER_JOIN;
 		}
 	}
 
@@ -83,7 +83,7 @@ public class Join {
 
 		@Override
 		public String joinKeyword() {
-			return SqlConstants.LEFT_JOIN;
+			return Sql.LEFT_JOIN;
 		}
 	}
 

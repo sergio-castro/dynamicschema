@@ -4,10 +4,6 @@ public class SqlCondition {
 
 	private StringBuilder builder;
 	
-	public static final String AND = "AND";
-	public static final String OR = "OR";
-	public static final String NOT = "NOT";
-	
 	public SqlCondition(String ...conditions) {
 		builder = new StringBuilder();
 		for(String condition : conditions)

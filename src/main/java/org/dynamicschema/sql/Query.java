@@ -1,12 +1,12 @@
 package org.dynamicschema.sql;
 
-import static org.dynamicschema.sql.SqlConstants.FROM;
-import static org.dynamicschema.sql.SqlConstants.GROUP_BY;
-import static org.dynamicschema.sql.SqlConstants.HAVING;
-import static org.dynamicschema.sql.SqlConstants.LIMIT;
-import static org.dynamicschema.sql.SqlConstants.ORDER_BY;
-import static org.dynamicschema.sql.SqlConstants.SELECT;
-import static org.dynamicschema.sql.SqlConstants.WHERE;
+import static org.dynamicschema.sql.Sql.FROM;
+import static org.dynamicschema.sql.Sql.GROUP_BY;
+import static org.dynamicschema.sql.Sql.HAVING;
+import static org.dynamicschema.sql.Sql.LIMIT;
+import static org.dynamicschema.sql.Sql.ORDER_BY;
+import static org.dynamicschema.sql.Sql.SELECT;
+import static org.dynamicschema.sql.Sql.WHERE;
 
 import java.util.List;
 
