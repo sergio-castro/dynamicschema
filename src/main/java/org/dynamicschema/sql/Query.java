@@ -10,7 +10,7 @@ import static org.dynamicschema.sql.SqlConstants.WHERE;
 
 import java.util.List;
 
-import org.dynamicschema.sql.util.EnumerationBuilder;
+import com.google.common.base.Joiner;
 
 
 public class Query {
@@ -130,7 +130,7 @@ public class Query {
 	public String joinConditions() {
 		String joinConditionsString = "";
 		if(joinConditions != null) {
-			joinConditionsString = new EnumerationBuilder(joinConditions, " ").toString();
+			joinConditionsString = Joiner.on(" ").join(joinConditions);
 		}
 		return joinConditionsString;
 	}

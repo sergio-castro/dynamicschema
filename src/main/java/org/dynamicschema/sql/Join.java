@@ -3,7 +3,7 @@ package org.dynamicschema.sql;
 import java.util.Arrays;
 import java.util.List;
 
-import org.dynamicschema.sql.util.EnumerationBuilder;
+import com.google.common.base.Joiner;
 
 
 public class Join {
@@ -51,7 +51,7 @@ public class Join {
 	
 	@Override
 	public String toString() {
-		String join = joinKeyword() + " " + new EnumerationBuilder(tables, " ");
+		String join = joinKeyword() + " " + Joiner.on(" ").join(tables);
 		if(getOn() != null)
 			join += " " + SqlConstants.ON + " " + getOn();
 		return join;

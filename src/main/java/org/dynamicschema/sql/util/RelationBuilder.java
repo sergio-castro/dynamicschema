@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
+
 
 public class RelationBuilder {
 
@@ -31,6 +33,6 @@ public class RelationBuilder {
 	
 	@Override
 	public String toString() {
-		return new EnumerationBuilder(relations, pairSeparator).toString();
+		return Joiner.on(pairSeparator).join(relations);
 	}
 }

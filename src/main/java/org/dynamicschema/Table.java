@@ -10,11 +10,12 @@ import org.dynamicschema.context.IRelationalContextManager;
 import org.dynamicschema.context.ProxyRelationalContextManager;
 import org.dynamicschema.context.RelationalContextManager;
 import org.dynamicschema.sql.ContextedQueryBuilder;
-import org.dynamicschema.sql.util.EnumerationBuilder;
 import org.dynamicschema.sql.util.RelationBuilder;
 import org.dynamicschema.visitor.RelationalContextInitializerVisitor;
 import org.dynamicschema.visitor.SelectBuilderEagerRelationsVisitor;
 import org.dynamicschema.visitor.SelectBuilderLazyRelationVisitor;
+
+import com.google.common.base.Joiner;
 
 
 
@@ -132,7 +133,7 @@ public abstract class Table<ColumnModelType extends ColumnModel, RelationModelTy
 			values.add(binding.getValue());
 		}
 		
-		String insertStatement = "INSERT INTO "+getName()+" ("+new EnumerationBuilder(columns, ", ")+") VALUES ("+new EnumerationBuilder(values, ", ")+")";
+		String insertStatement = "INSERT INTO "+getName()+" ("+ Joiner.on(", ").join(columns) +") VALUES ("+ Joiner.on(", ").join(values)+")";
 		return insertStatement;
 	}
 	

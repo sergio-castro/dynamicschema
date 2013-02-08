@@ -3,18 +3,19 @@ package org.dynamicschema.sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dynamicschema.sql.util.EnumerationBuilder;
 import org.dynamicschema.sql.util.SqlCondition;
+
+import com.google.common.base.Joiner;
 
 
 public class QueryBuilder {
 
-	private EnumerationBuilder columns = new EnumerationBuilder();
-	private EnumerationBuilder tables = new EnumerationBuilder();
+	private List<String> columns = new ArrayList<String>();
+	private List<String> tables = new ArrayList<String>();
 	private List<Join> joins = new ArrayList<Join>();
 	private SqlCondition where = new SqlCondition();
-	private EnumerationBuilder orderBy = new EnumerationBuilder();
-	private EnumerationBuilder groupBy = new EnumerationBuilder();
+	private List<String> orderBy = new ArrayList<String>();
+	private List<String> groupBy = new ArrayList<String>();
 	private SqlCondition having = new SqlCondition();
 	private Integer limit;
 
@@ -59,7 +60,7 @@ public class QueryBuilder {
 	}
 
 	public String getColumns() {
-		return columns.toString();
+		return Joiner.on(", ").join(columns);
 	}
 	
 	public SqlCondition where() {
@@ -71,7 +72,7 @@ public class QueryBuilder {
 	}
 	
 	public String getTablesString() {
-		return tables.toString();
+		return Joiner.on(", ").join(tables);
 	}
 	
 	public String getWhereString() {
@@ -79,11 +80,11 @@ public class QueryBuilder {
 	}
 	
 	public String getOrderByString() {
-		return orderBy.toString();
+		return Joiner.on(", ").join(orderBy);
 	}
 	
 	public String getGroupByString() {
-		return groupBy.toString();
+		return Joiner.on(", ").join(groupBy);
 	}
 	
 	public String getHavingString() {
