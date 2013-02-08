@@ -1,5 +1,10 @@
 package org.dynamicschema.sql;
 
+import static org.dynamicschema.sql.Sql.FULL_JOIN;
+import static org.dynamicschema.sql.Sql.INNER_JOIN;
+import static org.dynamicschema.sql.Sql.LEFT_JOIN;
+import static org.dynamicschema.sql.Sql.RIGHT_JOIN;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,7 +73,7 @@ public class Join {
 
 		@Override
 		public String joinKeyword() {
-			return Sql.INNER_JOIN;
+			return INNER_JOIN;
 		}
 	}
 
@@ -83,7 +88,37 @@ public class Join {
 
 		@Override
 		public String joinKeyword() {
-			return Sql.LEFT_JOIN;
+			return LEFT_JOIN;
+		}
+	}
+	
+	public static class RightJoin extends Join {
+		public RightJoin(String on, List tables) {
+			super(on, tables);
+		}
+
+		public RightJoin(String on, Object ...tables) {
+			super(on, tables);
+		}
+
+		@Override
+		public String joinKeyword() {
+			return RIGHT_JOIN;
+		}
+	}
+
+	public static class FullJoin extends Join {
+		public FullJoin(String on, List tables) {
+			super(on, tables);
+		}
+
+		public FullJoin(String on, Object ...tables) {
+			super(on, tables);
+		}
+
+		@Override
+		public String joinKeyword() {
+			return FULL_JOIN;
 		}
 	}
 
