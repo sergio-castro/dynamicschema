@@ -1,5 +1,9 @@
 package org.dynamicschema.sql.util;
 
+import static org.dynamicschema.sql.Sql.AND;
+import static org.dynamicschema.sql.Sql.NOT;
+import static org.dynamicschema.sql.Sql.OR;
+
 public class SqlCondition {
 
 	private StringBuilder builder;
