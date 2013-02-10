@@ -1,9 +1,9 @@
 package org.dynamicschema.visitor;
 
-import org.dynamicschema.Relation;
-import org.dynamicschema.Table;
 import org.dynamicschema.context.IRelationalContextManager;
 import org.dynamicschema.context.ProxyRelationalContextManager;
+import org.dynamicschema.reification.Relation;
+import org.dynamicschema.reification.Table;
 
 public class SelectBuilderLazyRelationVisitor extends SelectBuilderEagerRelationsVisitor {
 

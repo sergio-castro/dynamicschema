@@ -1,11 +1,11 @@
 package org.dynamicschema.visitor;
 
-import org.dynamicschema.Fetching;
-import org.dynamicschema.Relation;
-import org.dynamicschema.Table;
 import org.dynamicschema.context.IRelationalContextManager;
 import org.dynamicschema.context.RelationContext;
 import org.dynamicschema.context.TableContext;
+import org.dynamicschema.reification.Fetching;
+import org.dynamicschema.reification.Relation;
+import org.dynamicschema.reification.Table;
 
 public class RelationalContextInitializerVisitor extends ContextedTableRelationsVisitor {
 

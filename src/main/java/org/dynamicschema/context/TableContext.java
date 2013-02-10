@@ -1,7 +1,7 @@
 package org.dynamicschema.context;
 
-import org.dynamicschema.Column;
-import org.dynamicschema.Table;
+import org.dynamicschema.reification.Column;
+import org.dynamicschema.reification.Table;
 
 public class TableContext {
 

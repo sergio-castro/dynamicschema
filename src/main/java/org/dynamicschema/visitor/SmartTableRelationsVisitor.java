@@ -3,7 +3,7 @@ package org.dynamicschema.visitor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dynamicschema.Relation;
+import org.dynamicschema.reification.Relation;
 
 
 /*

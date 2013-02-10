@@ -1,8 +1,8 @@
 package org.dynamicschema.context;
 
-import org.dynamicschema.Column;
-import org.dynamicschema.Relation;
-import org.dynamicschema.Table;
+import org.dynamicschema.reification.Column;
+import org.dynamicschema.reification.Relation;
+import org.dynamicschema.reification.Table;
 
 public interface IRelationalContextManager {
 

@@ -1,4 +1,7 @@
-package org.dynamicschema;
+package org.dynamicschema.reification;
+
+import static org.dynamicschema.sql.Sql.CREATE_TABLE;
+import static org.dynamicschema.sql.Sql.DROP_TABLE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,8 +47,8 @@ public abstract class Table<ColumnModelType extends ColumnModel, RelationModelTy
 	}
 	
 	public void setColumnModel(ColumnModelType columnModel) {
-		columnModel.setTable(this);
 		this.columnModel = columnModel;
+		columnModel.attach(this);
 	}
 
 	public ColumnModelType getColumnModel() {
@@ -159,6 +162,21 @@ public abstract class Table<ColumnModelType extends ColumnModel, RelationModelTy
 		return getName();
 	}
 	
+	public String toTableDefString() {
+		StringBuilder sb = new StringBuilder(name + "(");
+		sb.append(getColumnModel().toColumnModelDefString());
+		sb.append(")");
+		return sb.toString();
+	}
+	
+	public String createTableStatement() {
+		return CREATE_TABLE + " " + toTableDefString() + ";";
+	}
+	
+	public String dropTableStatement() {
+		return DROP_TABLE + " " + name + ";";
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof Table))
@@ -171,6 +189,7 @@ public abstract class Table<ColumnModelType extends ColumnModel, RelationModelTy
 	public int hashCode() {
 		return getName().hashCode();
 	}
+	
 	
 }
 

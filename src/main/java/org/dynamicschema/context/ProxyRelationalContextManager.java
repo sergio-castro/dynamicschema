@@ -3,9 +3,9 @@ package org.dynamicschema.context;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dynamicschema.Column;
-import org.dynamicschema.Relation;
-import org.dynamicschema.Table;
+import org.dynamicschema.reification.Column;
+import org.dynamicschema.reification.Relation;
+import org.dynamicschema.reification.Table;
 
 
 public class ProxyRelationalContextManager implements IRelationalContextManager {

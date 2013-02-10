@@ -40,4 +40,8 @@ public class Sql {
 	public static final String UPDATE = "UPDATE";
 	public static final String SET = "SET";
 	
+	
+	//DDL
+	public static final String CREATE_TABLE = "CREATE TABLE";
+	public static final String DROP_TABLE = "DROP TABLE";
 }

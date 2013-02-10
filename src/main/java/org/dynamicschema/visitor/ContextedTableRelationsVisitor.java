@@ -1,7 +1,7 @@
 package org.dynamicschema.visitor;
 
-import org.dynamicschema.Fetching;
 import org.dynamicschema.context.IRelationalContextManager;
+import org.dynamicschema.reification.Fetching;
 
 public class ContextedTableRelationsVisitor extends TableRelationsVisitor {
 

@@ -3,8 +3,8 @@ package org.dynamicschema.context;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dynamicschema.Column;
-import org.dynamicschema.Table;
+import org.dynamicschema.reification.Column;
+import org.dynamicschema.reification.Table;
 
 
 public class RelationContext {

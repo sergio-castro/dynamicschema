@@ -1,8 +1,8 @@
 package org.dynamicschema.visitor;
 
-import org.dynamicschema.Relation;
-import org.dynamicschema.Schema;
-import org.dynamicschema.Table;
+import org.dynamicschema.reification.Relation;
+import org.dynamicschema.reification.Schema;
+import org.dynamicschema.reification.Table;
 
 /*
  * Visits the objects in a database schema

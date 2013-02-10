@@ -1,4 +1,4 @@
-package org.dynamicschema;
+package org.dynamicschema.reification;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,6 +1,5 @@
-package org.dynamicschema;
+package org.dynamicschema.reification;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,17 +7,12 @@ import org.dynamicschema.context.IRelationalContextManager;
 import org.dynamicschema.sql.util.RelationCondition;
 
 
-public class Relation implements Serializable {
+public class Relation {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private List<Table> tables;
-	private Fetching fetching;
 	private RelationModel relationModel;
 	private String name;
+	private List<Table> tables;
+	private Fetching fetching;
 	private RelationCondition relationCondition;
 	//private RelationalContext relationalContext;
 	//private SqlCondition joinCondition;

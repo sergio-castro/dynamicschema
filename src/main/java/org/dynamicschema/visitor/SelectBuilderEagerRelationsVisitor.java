@@ -3,12 +3,12 @@ package org.dynamicschema.visitor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dynamicschema.Column;
-import org.dynamicschema.Fetching;
-import org.dynamicschema.Relation;
-import org.dynamicschema.Table;
 import org.dynamicschema.context.IRelationalContextManager;
 import org.dynamicschema.context.TableContext;
+import org.dynamicschema.reification.Column;
+import org.dynamicschema.reification.Fetching;
+import org.dynamicschema.reification.Relation;
+import org.dynamicschema.reification.Table;
 import org.dynamicschema.sql.ContextedQueryBuilder;
 import org.dynamicschema.sql.Join.LeftJoin;
 
