@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.dynamicschema.reification.Relation;
 import org.dynamicschema.reification.Table;
-import org.dynamicschema.reification.TableOccurrence;
 import org.dynamicschema.reification.TableRelation;
 
 public class RelationNode extends RelationTree {
@@ -13,7 +12,7 @@ public class RelationNode extends RelationTree {
 	public static final String RELATION_PREFIX = "Relation";
 	
 	private TableRelation tableRelation;
-	private int relationIndex;
+	private int relationIndex; //index of the table relation
 	
 	public RelationNode(TableNode parent, int relationIndex) {
 		super(parent, parent.getId() + TABLE_RELATION_SEP + RELATION_PREFIX + relationIndex);
@@ -24,10 +23,10 @@ public class RelationNode extends RelationTree {
 	@Override
 	public List<TableNode> getChildren() {
 		List<TableNode> children = new ArrayList<TableNode>();
-		List<TableOccurrence> tableOccurrences = tableRelation.getRelationTablesOccurrences();
-		for(TableOccurrence tableOccurrence : tableOccurrences) {
-			int indexTableOccurrence = tableRelation.indexInRelation(tableOccurrence);
-			TableNode tableNode = new TableNode(this, indexTableOccurrence);
+		for(int i=0; i<getRelation().getRelationMembers().size(); i++) {
+			if(i == tableRelation.getIndexTableInRelation())
+				continue;
+			TableNode tableNode = new TableNode(this, i);
 			children.add(tableNode);
 		}
 		return children;
@@ -56,14 +55,8 @@ public class RelationNode extends RelationTree {
 	
 	public List<Table> getJoinedTables(RelationalContextManager ctx) {
 		List<Table> joinedTables = new ArrayList<Table>();
-		for(int i=0; i<getRelation().getCardinality().size(); i++) {
-			if(i == tableRelation.getIndexTableInRelation()) {
-				continue;
-			} else {
-				TableOccurrence tableOccurrence = getRelation().getCardinality().get(i);
-				TableNode tableNode = new TableNode(this, i);
-				joinedTables.add(tableNode.getContextedTable(ctx));
-			}
+		for(TableNode child : getChildren()) {
+			joinedTables.add(child.getContextedTable(ctx));
 		}
 		return joinedTables;
 	}
@@ -71,18 +64,16 @@ public class RelationNode extends RelationTree {
 	public List<Table> getRelationArgs(RelationalContextManager ctx) {
 		TableNode parentTableNode = getParentTable();
 		List<Table> relationArgs = new ArrayList<Table>();
-		for(int i=0; i<getRelation().getCardinality().size(); i++) {
+		for(int i=0; i<getRelation().getRelationMembers().size(); i++) {
 			if(i == tableRelation.getIndexTableInRelation()) {
 				relationArgs.add(parentTableNode.getContextedTable(ctx));
 			} else {
-				TableOccurrence tableOccurrence = getRelation().getCardinality().get(i);
 				TableNode tableNode = new TableNode(this, i);
 				relationArgs.add(tableNode.getContextedTable(ctx));
 			}
 		}
 		return relationArgs;
 	}
-
 
 	
 }

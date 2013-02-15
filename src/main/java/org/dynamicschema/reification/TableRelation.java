@@ -13,20 +13,24 @@ public class TableRelation {
 		this.indexTableInRelation = indexTableInRelation;
 	}
 
+	public Table getBaseTable() {
+		return relation.getTable(indexTableInRelation);
+	}
+	
 	public int getIndexTableInRelation() {
 		return indexTableInRelation;
 	}
 	
-	public TableOccurrence getBaseTableOccurrence() {
-		return relation.getCardinality().get(indexTableInRelation);
+	public RelationMember getBaseTableOccurrence() {
+		return relation.getRelationMembers().get(indexTableInRelation);
 	}
 
-	public List<TableOccurrence> getRelationTablesOccurrences() {
-		List<TableOccurrence> relationTableOccurrences = new ArrayList<TableOccurrence>();
-		for(int i=0; i<relation.getCardinality().size(); i++) {
+	public List<RelationMember> getRelationTablesOccurrences() {
+		List<RelationMember> relationTableOccurrences = new ArrayList<RelationMember>();
+		for(int i=0; i<relation.getRelationMembers().size(); i++) {
 			if(i == indexTableInRelation)
 				continue;
-			relationTableOccurrences.add(relation.getCardinality().get(i));
+			relationTableOccurrences.add(relation.getRelationMembers().get(i));
 		}
 		return relationTableOccurrences;
 	}
@@ -41,10 +45,6 @@ public class TableRelation {
 	
 	public Fetching getFetching() {
 		return getRelation().getFetching(indexTableInRelation);
-	}
-
-	public int indexInRelation(TableOccurrence tableOccurrence) {
-		return getRelation().getCardinality().indexOf(tableOccurrence);
 	}
 
 	public boolean equivalent(TableRelation tableRelation) {

@@ -5,9 +5,8 @@ import java.util.Map;
 
 import org.dynamicschema.reification.Table;
 
-//TODO move this class to the RelationContext class
 /*
- * Keep a track of used alias names
+ * Keep track of used alias names
  * Provides a method answering a new alias for a table that warranties the alias has not been used in any possible occurrence of the table in a SQL expression
  */
 public class RelationalContextManager {
@@ -57,16 +56,5 @@ public class RelationalContextManager {
 		tableContext.setBindings(bindings);
 		return tableContext;
 	}
-
-
-//	public static RelationalContextManager createRelationalContext(Table table) {
-//		RelationalContextManager ctx = new RelationalContextManager();
-//		configureRelationalContext(ctx, table);
-//		return ctx;
-//	}
-//
-//	public static void configureRelationalContext(RelationalContextManager ctx, Table table) {
-//		new RelationalContextInitializerVisitor(ctx).visit(table);
-//	}
 	
 }

@@ -19,7 +19,7 @@ public class TableNode extends RelationTree {
 	public static final String TABLE_PREFIX = "Table";
 
 	private Table table;
-	private int tableIndex;
+	private int tableIndex; //index of table in the parent relation
 	
 	public TableNode(Table table) {
 		super(null, TABLE_PREFIX + "0");
@@ -29,7 +29,7 @@ public class TableNode extends RelationTree {
 	
 	public TableNode(RelationNode parent, int tableIndex) {
 		super(parent, parent.getId() + RELATION_TABLE_SEP + TABLE_PREFIX + tableIndex);
-		this.table = parent.getRelation().getTables().get(tableIndex);
+		this.table = parent.getRelation().getTable(tableIndex);
 		this.tableIndex = tableIndex;
 	}
 
@@ -38,7 +38,6 @@ public class TableNode extends RelationTree {
 		List<RelationNode> children = new ArrayList<RelationNode>();
 		List<TableRelation> tableRelations = getTable().getTableRelations();
 		for(int i=0; i<tableRelations.size();i++) {
-			//TableRelation tableRelation = tableRelations.get(i);
 			RelationNode relationNode = new RelationNode(this, i);
 			children.add(relationNode);
 		}

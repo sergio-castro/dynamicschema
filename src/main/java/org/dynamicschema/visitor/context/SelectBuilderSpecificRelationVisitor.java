@@ -14,10 +14,10 @@ public class SelectBuilderSpecificRelationVisitor extends SelectBuilderEagerRela
 	Map<String, Object> columnBindings;
 	
 	public SelectBuilderSpecificRelationVisitor(TableRelation tableRelation, Map<String, Object> columnBindings) {
-		super(tableRelation.getBaseTableOccurrence().getTable());
+		super(tableRelation.getBaseTable());
 		this.tableRelation = tableRelation;
 		this.columnBindings = columnBindings;
-		this.indexTableRelation = tableRelation.getBaseTableOccurrence().getTable().getTableRelations().indexOf(tableRelation);
+		this.indexTableRelation = tableRelation.getBaseTable().getTableRelations().indexOf(tableRelation);
 	}
 
 	public TableRelation getTableRelation() {

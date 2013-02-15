@@ -5,22 +5,22 @@ package org.dynamicschema.reification;
  * @author sergioc
  *
  */
-public class TableOccurrence {
+public class RelationMember {
 
-	private DBTable table;
+	private String tableName;
 	private Occurrence occurrence;
 	
-	public TableOccurrence(DBTable table, Occurrence occurrence) {
-		this.table = table;
+	public RelationMember(String tableName, Occurrence occurrence) {
+		this.tableName = tableName;
 		this.occurrence = occurrence;
 	}
 
-	public DBTable getTable() {
-		return table;
+	public String getTableName() {
+		return tableName;
 	}
 
-	public void setTable(DBTable table) {
-		this.table = table;
+	public void setTableName(String table) {
+		this.tableName = table;
 	}
 
 	public Occurrence getOccurrence() {
@@ -37,7 +37,7 @@ public class TableOccurrence {
 		int result = 1;
 		result = prime * result
 				+ ((occurrence == null) ? 0 : occurrence.hashCode());
-		result = prime * result + ((table == null) ? 0 : table.hashCode());
+		result = prime * result + ((tableName == null) ? 0 : tableName.hashCode());
 		return result;
 	}
 
@@ -49,17 +49,15 @@ public class TableOccurrence {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TableOccurrence other = (TableOccurrence) obj;
+		RelationMember other = (RelationMember) obj;
 		if (occurrence != other.occurrence)
 			return false;
-		if (table == null) {
-			if (other.table != null)
+		if (tableName == null) {
+			if (other.tableName != null)
 				return false;
-		} else if (!table.equals(other.table))
+		} else if (!tableName.equals(other.tableName))
 			return false;
 		return true;
 	}
-	
 
-	
 }

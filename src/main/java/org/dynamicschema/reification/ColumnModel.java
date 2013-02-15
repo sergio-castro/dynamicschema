@@ -40,6 +40,14 @@ public class ColumnModel implements Iterable<Column> {
 		}
 	}
 	
+	public void setColumnsNames(List<String> columnsNames) {
+		List<Column> columns = new ArrayList<Column>();
+		for(String columnName : columnsNames) {
+			columns.add(new Column(columnName));
+		}
+		setColumns(columns);
+	}
+	
 	public Column getColumn(String columnName) {
 		for(Column column : getColumns()) {
 			if(column.getSimpleName().equals(columnName))

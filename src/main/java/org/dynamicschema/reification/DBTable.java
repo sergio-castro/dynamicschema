@@ -47,7 +47,7 @@ public class DBTable extends AbstractTable {
 		return columnModel;
 	}
 	
-	public String getColumnValue(String columnName) {
+	public String col(String columnName) {
 		return getColumnModel().getColumn(columnName).toString();
 	}
 	
@@ -79,7 +79,7 @@ public class DBTable extends AbstractTable {
 		return getName()+"."+column.getSimpleName();
 	}
 
-	public TableRelation getTableRelation(String relationName, String tableRole) {
+	public TableRelation getTableRelation(DBTable relationName, DBTable tableRole) {
 		Relation relation = getSchemaOrThrow().getRelationModel().getRelation(relationName);
 		return relation.getTableRelation(tableRole);
 	}

@@ -19,7 +19,7 @@ public interface Table {
 	
 	public List<String> getColumnValues();
 	
-	public String getColumnValue(String columnName);
+	public String col(String columnName);
 
 	public String fromClauseName();
 	

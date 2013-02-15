@@ -64,12 +64,12 @@ public class ContextedTable extends AbstractTable {
 	}
 	
 	@Override
-	public String getColumnValue(String columnName) {
+	public String col(String columnName) {
 		Object binding = getColumnBinding(columnName);
 		if(binding != null)
 			return binding.toString();
 		else
-			return alias + "." + table.getColumnValue(columnName);
+			return alias + "." + table.col(columnName);
 	}
 	
 	public String fromClauseName() {
