@@ -1,6 +1,6 @@
-package org.dynamicschema.sql;
+package org.dynamicschema.context;
 
-import org.dynamicschema.context.RelationalContextManager;
+import org.dynamicschema.sql.QueryBuilder;
 
 /**
  * @author sergioc

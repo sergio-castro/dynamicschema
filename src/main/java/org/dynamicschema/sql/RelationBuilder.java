@@ -1,4 +1,4 @@
-package org.dynamicschema.sql.util;
+package org.dynamicschema.sql;
 
 import java.util.ArrayList;
 import java.util.List;

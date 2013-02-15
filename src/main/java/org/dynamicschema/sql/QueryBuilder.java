@@ -3,7 +3,6 @@ package org.dynamicschema.sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dynamicschema.sql.util.SqlCondition;
 
 import com.google.common.base.Joiner;
 

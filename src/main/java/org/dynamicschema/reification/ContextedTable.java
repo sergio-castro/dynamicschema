@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dynamicschema.sql.RelationCondition;
 import org.dynamicschema.sql.Sql;
-import org.dynamicschema.sql.util.RelationCondition;
-import org.dynamicschema.sql.util.SqlCondition;
+import org.dynamicschema.sql.SqlCondition;
 
 public class ContextedTable extends AbstractTable {
 

@@ -1,4 +1,4 @@
-package org.dynamicschema.sql.util;
+package org.dynamicschema.sql;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,6 +9,8 @@ import org.dynamicschema.reification.Table;
 
 public abstract class RelationCondition {
 
+	public static final String EVAL_METHOD_NAME = "eval";
+	
 	public SqlCondition eval(List<Table> tables) {
 		return eval(tables.toArray(new Table[]{}));
 	}
@@ -19,7 +21,7 @@ public abstract class RelationCondition {
 		for(int i=0; i<tables.length; i++)
 			paramClasses.add(Table.class);
 		try {
-			m = this.getClass().getMethod("eval", paramClasses.toArray(new Class[]{}));
+			m = this.getClass().getMethod(EVAL_METHOD_NAME, paramClasses.toArray(new Class[]{}));
 		} catch (SecurityException e) {
 			throw(e);
 		} catch (NoSuchMethodException e) {
@@ -34,6 +36,24 @@ public abstract class RelationCondition {
 		} catch (InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private boolean allArgumentsAreTables(Method method) {
+		for(Class parameterClass : method.getParameterTypes()) {
+			if(!Table.class.isAssignableFrom(parameterClass))
+				return false;
+		}
+		return true;
+	}
+	
+	public Method getCustomEvalMethod() {
+		Method[] methods = getClass().getMethods();
+		Method matchedMethod = null;
+		for(Method method : methods) {
+			if(method.getName().equals(EVAL_METHOD_NAME) && allArgumentsAreTables(method))
+				matchedMethod = method;
+		}
+		return matchedMethod;
 	}
 	
 	/*

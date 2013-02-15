@@ -5,20 +5,19 @@ import java.util.Map;
 
 import org.dynamicschema.context.RelationNode;
 import org.dynamicschema.context.TableNode;
-import org.dynamicschema.reification.Table;
 import org.dynamicschema.reification.TableRelation;
 
 public class SelectBuilderSpecificRelationVisitor extends SelectBuilderEagerRelationsVisitor {
 
 	private TableRelation tableRelation;
-	private int indexTableRelation;
+	private int indexTableRelation; //the index of the TableRelation object in the list of TableRelations of the table
 	Map<String, Object> columnBindings;
 	
-	public SelectBuilderSpecificRelationVisitor(Table table, int indexTableRelation, Map<String, Object> columnBindings) {
-		super(table);
-		this.indexTableRelation = indexTableRelation;
-		//this.tableRelation = tableRelation;
+	public SelectBuilderSpecificRelationVisitor(TableRelation tableRelation, Map<String, Object> columnBindings) {
+		super(tableRelation.getBaseTableOccurrence().getTable());
+		this.tableRelation = tableRelation;
 		this.columnBindings = columnBindings;
+		this.indexTableRelation = tableRelation.getBaseTableOccurrence().getTable().getTableRelations().indexOf(tableRelation);
 	}
 
 	public TableRelation getTableRelation() {

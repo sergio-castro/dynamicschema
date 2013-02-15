@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.dynamicschema.context.ContextedQueryBuilder;
 import org.dynamicschema.context.RelationalContextManager;
-import org.dynamicschema.context.TableNode;
-import org.dynamicschema.sql.ContextedQueryBuilder;
-import org.dynamicschema.sql.util.RelationBuilder;
-import org.dynamicschema.sql.util.RelationCondition;
-import org.dynamicschema.sql.util.SqlCondition;
+import org.dynamicschema.sql.RelationBuilder;
+import org.dynamicschema.sql.RelationCondition;
+import org.dynamicschema.sql.SqlCondition;
 import org.dynamicschema.visitor.SchemaVisitor;
 import org.dynamicschema.visitor.context.SelectBuilderEagerRelationsVisitor;
 import org.dynamicschema.visitor.context.SelectBuilderSpecificRelationVisitor;
@@ -80,8 +79,13 @@ public class DBTable extends AbstractTable {
 		return getName()+"."+column.getSimpleName();
 	}
 
-	public ContextedQueryBuilder lazyRelationSelect(int indexTableRelation, Map<String, Object> columnBindings) {
-		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(this, indexTableRelation, columnBindings);
+	public TableRelation getTableRelation(String relationName, String tableRole) {
+		Relation relation = getSchemaOrThrow().getRelationModel().getRelation(relationName);
+		return relation.getTableRelation(tableRole);
+	}
+	
+	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings) {
+		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings);
 		selectBuilderVisitor.visit();
 		return selectBuilderVisitor.getQueryBuilder();
 	}

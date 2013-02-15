@@ -2,12 +2,12 @@ package org.dynamicschema.visitor.context;
 
 import java.util.List;
 
+import org.dynamicschema.context.ContextedQueryBuilder;
 import org.dynamicschema.context.RelationNode;
 import org.dynamicschema.context.TableNode;
 import org.dynamicschema.reification.Table;
-import org.dynamicschema.sql.ContextedQueryBuilder;
+import org.dynamicschema.sql.SqlCondition;
 import org.dynamicschema.sql.Join.LeftJoin;
-import org.dynamicschema.sql.util.SqlCondition;
 
 
 public class SelectBuilderEagerRelationsVisitor extends ContextedTableRelationsVisitor {

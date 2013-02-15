@@ -1,4 +1,4 @@
-package org.dynamicschema.sql.util;
+package org.dynamicschema.sql;
 
 import static org.dynamicschema.sql.Sql.AND;
 import static org.dynamicschema.sql.Sql.NOT;

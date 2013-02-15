@@ -6,7 +6,6 @@ import static org.dynamicschema.sql.Sql.LEFT_JOIN;
 import static org.dynamicschema.sql.Sql.RIGHT_JOIN;
 
 import org.dynamicschema.reification.Table;
-import org.dynamicschema.sql.util.SqlCondition;
 
 
 public class Join {

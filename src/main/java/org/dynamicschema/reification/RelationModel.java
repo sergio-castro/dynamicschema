@@ -19,6 +19,17 @@ public class RelationModel implements Iterable<Relation> {
 		relations = new ArrayList<Relation>();
 	}
 
+	public Relation getRelation(String relationName) {
+		Relation relation = null;
+		for(Relation r : relations) {
+			if(r.getName().equals(relationName)) {
+				relation = r;
+				break;
+			}
+		}
+		return relation;
+	}
+	
 	public List<Relation> getRelations() {
 		return relations;
 	}

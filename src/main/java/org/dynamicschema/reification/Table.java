@@ -2,8 +2,8 @@ package org.dynamicschema.reification;
 
 import java.util.List;
 
-import org.dynamicschema.sql.util.RelationCondition;
-import org.dynamicschema.sql.util.SqlCondition;
+import org.dynamicschema.sql.RelationCondition;
+import org.dynamicschema.sql.SqlCondition;
 
 public interface Table {
 

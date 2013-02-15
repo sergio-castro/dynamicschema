@@ -57,7 +57,7 @@ public class RelationNode extends RelationTree {
 	public List<Table> getJoinedTables(RelationalContextManager ctx) {
 		List<Table> joinedTables = new ArrayList<Table>();
 		for(int i=0; i<getRelation().getCardinality().size(); i++) {
-			if(i == tableRelation.getIndexSourceTable()) {
+			if(i == tableRelation.getIndexTableInRelation()) {
 				continue;
 			} else {
 				TableOccurrence tableOccurrence = getRelation().getCardinality().get(i);
@@ -72,7 +72,7 @@ public class RelationNode extends RelationTree {
 		TableNode parentTableNode = getParentTable();
 		List<Table> relationArgs = new ArrayList<Table>();
 		for(int i=0; i<getRelation().getCardinality().size(); i++) {
-			if(i == tableRelation.getIndexSourceTable()) {
+			if(i == tableRelation.getIndexTableInRelation()) {
 				relationArgs.add(parentTableNode.getContextedTable(ctx));
 			} else {
 				TableOccurrence tableOccurrence = getRelation().getCardinality().get(i);
