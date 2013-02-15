@@ -1,43 +1,30 @@
 package org.dynamicschema.visitor;
 
+import org.dynamicschema.reification.Column;
+import org.dynamicschema.reification.ColumnModel;
 import org.dynamicschema.reification.Relation;
+import org.dynamicschema.reification.RelationModel;
 import org.dynamicschema.reification.Schema;
-import org.dynamicschema.reification.Table;
+import org.dynamicschema.reification.DBTable;
 
-/*
- * Visits the objects in a database schema
+/**
+ * An interface for visitors of the schema
+ * Non-leaf nodes answer a boolean in their doVisit methods. If the result is false, children should not be visited
+ * @author sergioc
+ *
  */
-public class SchemaVisitor {
+public interface SchemaVisitor {
 
-	public SchemaVisitor() {}
+	public abstract boolean doVisit(Schema schema);
 	
-	public void visit(Schema schema) {
-		for(Table table : schema.getTables())
-			visit(table);
-	}
+	public abstract boolean doVisit(DBTable table);
 	
-	public void visit(Table table) {
-		visit(table.getBaseRelation());
-		for(Relation transitiveRelation : table.getRelationModel()) {
-			visit(transitiveRelation);
-		}
-	}
+	public abstract boolean doVisit(ColumnModel columnModel);
 	
-	public void visit(Relation relation) {
-		if(doVisit(relation)) {
-			for(Table table : relation.getTables())
-				visit(relation, table);
-		}
-	}
+	public abstract void doVisit(Column column); //column is a leaf the tree representing the schema, so it does not make sense to return a boolean indicating if children should be visited
 	
-	public void visit(Relation relation, Table table) {
-		doVisit(relation, table);
-	}
+	public abstract boolean doVisit(RelationModel relationModel);
 	
-	/*
-	 * If the method returns true, then the visitor should visit the tables in the relation
-	 */
-	public boolean doVisit(Relation relation) {return true;}
-	
-	public void doVisit(Relation relation, Table table) {}
+	public abstract void doVisit(Relation relation); //relation is a leaf the tree representing the schema, so it does not make sense to return a boolean indicating if children should be visited
+
 }

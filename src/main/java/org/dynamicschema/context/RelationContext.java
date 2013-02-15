@@ -3,47 +3,30 @@ package org.dynamicschema.context;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dynamicschema.reification.Column;
-import org.dynamicschema.reification.Table;
-
 
 public class RelationContext {
-	private Map<Table, TableContext> tableContextMap;
-	//private Map<Column, Object> columnValueMap;
+	private Map<TableNode, TableContext> relationContextMap;
 	
 	public RelationContext() {
-		tableContextMap = new HashMap<Table, TableContext>();
-		//columnValueMap = new HashMap<Column, Object>();
+		relationContextMap = new HashMap<TableNode, TableContext>();
 	}
 	
-	public TableContext getTableContext(Table table) {
-		return tableContextMap.get(table);
+	public TableContext getTableContext(TableNode tableNode) {
+		return relationContextMap.get(tableNode);
 	}
 	
-	public void addTableContext(Table table, TableContext tableContext) {
-		tableContextMap.put(table, tableContext);
+	public void addTableContext(TableNode tableNode, TableContext tableContext) {
+		relationContextMap.put(tableNode, tableContext);
 	}
 	
-	public TableContext getOrCreateTableContext(Table table) {
-		TableContext tableContext = tableContextMap.get(table);
+	public TableContext getOrCreateTableContext(TableNode tableNode) {
+		TableContext tableContext = relationContextMap.get(tableNode);
 		if(tableContext==null) {
 			tableContext = new TableContext();
-			addTableContext(table, tableContext);
+			addTableContext(tableNode, tableContext);
 		}
 		return tableContext;
 	}
-	
-	public Object getColumnValue(Column column) {
-		TableContext tableContext = tableContextMap.get(column.getTable());
-		return tableContext.columnName(column);
-		/*
-		Object columnValue = columnValueMap.get(column);
-		if(columnValue == null) {
-			TableContext tableContext = tableContextMap.get(column.getTable());
-			columnValue = tableContext.columnName(column);
-		}
-		return columnValue;
-		*/
-	}
 
 }
+

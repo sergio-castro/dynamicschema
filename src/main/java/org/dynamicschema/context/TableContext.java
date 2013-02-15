@@ -1,42 +1,50 @@
 package org.dynamicschema.context;
 
-import org.dynamicschema.reification.Column;
-import org.dynamicschema.reification.Table;
+import java.util.Map;
+
 
 public class TableContext {
 
 	private String alias;
 	private int offset;
-	public String getAlias() {
-		return alias;
+	private Map<String, Object> bindings;
+	
+	public TableContext() {
 	}
-	public void setAlias(String alias) {
+	
+	public TableContext(String alias, int offset) {
 		this.alias = alias;
-	}
-	public int getOffset() {
-		return offset;
-	}
-	public void setOffset(int offset) {
 		this.offset = offset;
 	}
 	
-	/*
-	 * Table name as it should look in the FROM clause of a SELECT statement
-	 */
-	public String aliasedTable(Table table) {
-		return table+" "+alias;
+	public TableContext(String alias, int offset, Map<String, Object> bindings) {
+		this.alias = alias;
+		this.offset = offset;
+		this.bindings = bindings;
 	}
 	
-	/*
-	 * Column name as it should be referenced in a SELECT statement
-	 */
-	public String columnName(Column column) {
-		return alias+"."+column.getSimpleName();
+	public String getAlias() {
+		return alias;
 	}
 	
-	@Override
-	public String toString() {
-		return "Table context with alias: " + getAlias();
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 	
+	public int getOffset() {
+		return offset;
+	}
+	
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public Map<String, Object> getBindings() {
+		return bindings;
+	}
+
+	public void setBindings(Map<String, Object> bindings) {
+		this.bindings = bindings;
+	}
+
 }

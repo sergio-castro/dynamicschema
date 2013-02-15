@@ -19,6 +19,12 @@ public class QueryBuilder {
 	private SqlCondition having = new SqlCondition();
 	private Integer limit;
 
+	
+	public QueryBuilder addColumns(List<String> columnsNames) {
+		columns.addAll(columnsNames);
+		return this;
+	}
+	
 	public QueryBuilder addColumn(String columnName) {
 		columns.add(columnName);
 		return this;
@@ -29,6 +35,13 @@ public class QueryBuilder {
 		return this;
 	}
 
+	public QueryBuilder addWhere(SqlCondition whereCondition) {
+		if(whereCondition != null)
+			return addWhere(whereCondition.toString());
+		else
+			return this;
+	}
+	
 	public QueryBuilder addWhere(String whereString) {
 		where.and(whereString);
 		return this;
@@ -47,6 +60,13 @@ public class QueryBuilder {
 	public QueryBuilder addGroupBy(String groupByString) {
 		groupBy.add(groupByString);
 		return this;
+	}
+	
+	public QueryBuilder addHaving(SqlCondition havingCondition) {
+		if(havingCondition != null)
+			return addHaving(havingCondition.toString());
+		else
+			return this;
 	}
 	
 	public QueryBuilder addHaving(String havingString) {

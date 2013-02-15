@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.dynamicschema.reification.columnconstraint.ColumnConstraint;
+import org.dynamicschema.visitor.SchemaVisitor;
 
 import com.google.common.base.Joiner;
 
@@ -13,7 +14,7 @@ public class ColumnModel implements Iterable<Column> {
 
 	private List<Column> columns;
 	private List<ColumnConstraint> columnsConstraints;
-	private Table table;
+	private DBTable table;
 	
 	public ColumnModel() {
 		this(new ArrayList<Column>());
@@ -39,6 +40,14 @@ public class ColumnModel implements Iterable<Column> {
 		}
 	}
 	
+	public Column getColumn(String columnName) {
+		for(Column column : getColumns()) {
+			if(column.getSimpleName().equals(columnName))
+				return column;
+		}
+		return null;
+	}
+	
 	public List<Column> getColumns() {
 		return Collections.unmodifiableList(columns);
 	}
@@ -52,17 +61,17 @@ public class ColumnModel implements Iterable<Column> {
 		return columns.indexOf(column);
 	}
 
-	public Table getTableOrThrow() {
+	public DBTable getTableOrThrow() {
 		if(table == null)
 			throw new RuntimeException("ColumnModel not attached to a Table");
 		return getTable();
 	}
 	
-	public Table getTable() {
+	public DBTable getTable() {
 		return table;
 	}
 	
-	public void attach(Table table) {
+	public void attach(DBTable table) {
 		this.table = table;
 	}
 	
@@ -96,4 +105,12 @@ public class ColumnModel implements Iterable<Column> {
 		return sb.toString();
 	}
 
+	public void accept(SchemaVisitor visitor) {
+		if(visitor.doVisit(this)) {
+			for(Column column : getColumns()) {
+				column.accept(visitor);
+			}
+		}
+	}
+	
 }

@@ -1,65 +1,52 @@
 package org.dynamicschema.reification;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.dynamicschema.context.IRelationalContextManager;
 import org.dynamicschema.sql.util.RelationCondition;
-
+import org.dynamicschema.visitor.SchemaVisitor;
 
 public class Relation {
 
 	private RelationModel relationModel;
 	private String name;
-	private List<Table> tables;
-	private Fetching fetching;
-	private RelationCondition relationCondition;
-	//private RelationalContext relationalContext;
-	//private SqlCondition joinCondition;
+	private RelationCondition condition;
+	private List<TableOccurrence> cardinality;
+	private List<Fetching> fetchings;
 	
-	
-	public Relation(RelationModel relationModel, String name, Table ...tables) {
-		this(relationModel, name, Fetching.EAGER, tables);
+	public static Fetching defaultFetching(List<TableOccurrence> cardinality, int pos) {
+		if(cardinality.size() > 2) //terciary or bigger relationship
+			return Fetching.LAZY;
+		DBTable targetTable = cardinality.get(pos).getTable();
+		for(int i = 0; i < cardinality.size(); i++) {
+			if(i == pos)
+				continue;
+			if(cardinality.get(i).getTable().equals(targetTable)) //recursive relationship
+				return Fetching.LAZY;
+			if(!cardinality.get(i).getOccurrence().equals(Occurrence.ONE)) //if there is at least table with a cardinality different than one, then the fetching is lazy
+				return Fetching.LAZY;
+		}
+		return Fetching.EAGER;
 	}
 	
-	public Relation(RelationModel relationModel, String name, Fetching fetching, Table ...tablesArray) {
-		setRelationModel(relationModel);
+	public static List<Fetching> defaultFetchings(List<TableOccurrence> cardinality) {
+		List<Fetching> fetchings = new ArrayList<Fetching>();
+		for(int i = 0; i<cardinality.size(); i++) {
+			fetchings.add(defaultFetching(cardinality, i));
+		}
+		return fetchings;
+	}
+
+	
+	public Relation(String name, List<TableOccurrence> cardinality, RelationCondition condition) {
+		this(name, cardinality, condition, defaultFetchings(cardinality));
+	}
+	
+	public Relation(String name, List<TableOccurrence> cardinality, RelationCondition condition, List<Fetching> fetchings) {
 		setName(name);
-		setFetching(fetching);
-		setTables(tablesArray);
-	}
-	
-	public List<Table> getTables() {
-		return tables;
-	}
-	
-	public void setTables(List<Table> tables) {
-		this.tables = tables;
-	}
-	
-	public void setTables(Table ...tablesArray) {
-		setTables(Arrays.<Table>asList(tablesArray));
-	}
-	
-
-	public Fetching getFetching() {
-		return fetching;
-	}
-
-	public void setFetching(Fetching fetching) {
-		this.fetching = fetching;
-	}
-
-	public void setRelationModel(RelationModel relationModel) {
-		this.relationModel = relationModel;
-	}
-
-	public RelationModel getRelationModel() {
-		return relationModel;
-	}
-
-	public Relation baseRelation() {
-		return relationModel.getBaseRelation();
+		setCardinality(cardinality);
+		setCondition(condition);
+		setFetchings(fetchings);
 	}
 
 	public String getName() {
@@ -71,58 +58,90 @@ public class Relation {
 			throw new RuntimeException(name+" is not a valid name for a relation");
 		this.name = name;
 	}
-
-	public String joinCondition(IRelationalContextManager ctx) {
-		if (getCondition() == null)
-				return "";
-		else
-			return getCondition().eval(ctx).toString();
+	
+	public List<DBTable> getTables() {
+		List<DBTable> tables = new ArrayList<DBTable>();
+		for(TableOccurrence tableOccurrence : cardinality) {
+			tables.add(tableOccurrence.getTable());
+		}
+		return tables;
 	}
 
 	public RelationCondition getCondition() {
-		return relationCondition;
+		return condition;
 	}
 
-	public void setCondition(RelationCondition relationCondition) {
-		this.relationCondition = relationCondition;
-	}
-	
-	
-	/*
-	public String orderBy(IRelationalContextManager ctx) {
-		return "";
-	}
-	
-	public String groupBy(IRelationalContextManager ctx) {
-		return "";
-	}
-	
-	public String having(IRelationalContextManager ctx) {
-		return "";
-	}
-*/
-	
-	/*
-	public String getJoinCondition() {
-		return joinCondition.toString();
+	public void setCondition(RelationCondition condition) {
+		this.condition = condition;
 	}
 
-	public void addJoinCondition(String clause) {
-		joinCondition.and(clause);
+	public List<TableOccurrence> getCardinality() {
+		return cardinality;
 	}
-	*/
-/*
-	public void addAliases(GlobalRelationalContext ctx) {
-		
-	}
-*/
 
-	public boolean isBaseRelation() {
-		return getTables().get(0).getBaseRelation().equals(this);
+//	public boolean isUnary() {
+//		return cardinality.size() == 1;
+//	}
+
+	public boolean isBinary() {
+		return cardinality.size() == 2;
+	}
+
+	public boolean isTerciary() {
+		return cardinality.size() == 3;
+	}
+
+	
+	public void setCardinality(List<TableOccurrence> cardinality) {
+		this.cardinality = cardinality;
+	}
+
+	public List<Fetching> getFetchings() {
+		return fetchings;
+	}
+
+	public void setFetchings(List<Fetching> fetchings) {
+		this.fetchings = fetchings;
 	}
 	
-	public Object col(IRelationalContextManager ctx, Column column) {
-		return ctx.getColumnValue(this, column);
+	public void attach(RelationModel relationModel) {
+		this.relationModel = relationModel;
+	}
+	
+	public List<TableRelation> getTableRelations(DBTable table) {
+		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
+		for(int i=0; i<cardinality.size(); i++) {
+			if(cardinality.get(i).getTable().equals(table)) {
+				tableRelations.add(getTableRelation(i));
+			}
+		}
+		return tableRelations;
+	}
+
+	private TableRelation getTableRelation(int pos) {
+		return new TableRelation(this, pos, fetchings.get(pos));
+	}
+
+//	public boolean includes(Table table) {
+//		for(Table auxTable : getTables()) {
+//			if(auxTable.equals(table))
+//				return true;
+//		}
+//		return false;
+//	}
+	
+	public RelationModel getRelationModelOrThrow() {
+		if(relationModel == null)
+			throw new RuntimeException("Relation not attached to a RelationModel");
+		return getRelationModel();
+	}
+	
+	public RelationModel getRelationModel() {
+		return relationModel;
+	}
+	
+	public Schema getSchemaOrThrow() {
+		return getRelationModelOrThrow().getSchemaOrThrow();
 	}
 	
 	@Override
@@ -130,11 +149,16 @@ public class Relation {
 		return getName();
 	}
 	
+	public void accept(SchemaVisitor visitor) {
+		visitor.doVisit(this);
+	}
+	
+	/*
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof Relation))
+		if(!(o instanceof Relation2))
 			return false;
-		Relation relation = (Relation)o;
+		Relation2 relation = (Relation2)o;
 		return this.getName().equals(relation.getName());
 	}
 	
@@ -142,7 +166,5 @@ public class Relation {
 	public int hashCode() {
 		return getName().hashCode();
 	}
-
+	*/
 }
-
-

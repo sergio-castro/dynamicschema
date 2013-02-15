@@ -1,5 +1,6 @@
 package org.dynamicschema.reification;
 
+import org.dynamicschema.visitor.SchemaVisitor;
 
 public class Column {
 	private String simpleName;
@@ -47,7 +48,7 @@ public class Column {
 	}
 */
 
-	public Table getTable() {
+	public DBTable getTable() {
 		return getColumnModel().getTable();
 	}
 
@@ -83,4 +84,8 @@ public class Column {
 		this.columnModel = columnModel;
 	}
 
+	public void accept(SchemaVisitor visitor) {
+		visitor.doVisit(this);
+	}
+	
 }

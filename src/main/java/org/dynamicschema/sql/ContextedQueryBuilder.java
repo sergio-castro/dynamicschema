@@ -1,28 +1,32 @@
 package org.dynamicschema.sql;
 
-import org.dynamicschema.context.IRelationalContextManager;
+import org.dynamicschema.context.RelationalContextManager;
 
+/**
+ * @author sergioc
+ *
+ */
 public class ContextedQueryBuilder extends QueryBuilder {
 
-	private IRelationalContextManager relationalContext;
-	
-	
-	
-	public IRelationalContextManager getRelationalContext() {
-		return relationalContext;
-	}
+	private RelationalContextManager relationalContext;
 
+	/*
+    public ContextedQueryBuilder() {}
 
-
-	public void setRelationalContext(IRelationalContextManager relationalContext) {
+*/
+	
+	public ContextedQueryBuilder(RelationalContextManager relationalContext) {
 		this.relationalContext = relationalContext;
 	}
 
-/*
-    public ContextedQueryBuilder() {}
-
-	public ContextedQueryBuilder(IRelationalContextManager ctx) {
-		setRelationalContext(ctx);
+	public RelationalContextManager getRelationalContext() {
+		return relationalContext;
 	}
-*/
+
+//	public void setRelationalContext(RelationalContextManager relationalContext) {
+//		this.relationalContext = relationalContext;
+//	}
+
+
+
 }

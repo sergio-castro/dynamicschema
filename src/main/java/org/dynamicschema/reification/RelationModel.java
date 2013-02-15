@@ -1,100 +1,94 @@
 package org.dynamicschema.reification;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.dynamicschema.visitor.SchemaVisitor;
+
 public class RelationModel implements Iterable<Relation> {
 
-	protected Table baseTable;
-	protected Relation baseRelation; //value of the node
-	private List<Relation> joinRelations; //children of the node
-	
-
+	private List<Relation> relations;
+	private Schema schema;
 	
 	public RelationModel() {
-		setJoinRelations(new ArrayList<Relation>());
-	}	
-
-	/*
-	public RelationModel(Relation baseRelation) {
-		this(baseRelation, new ArrayList<Relation>());
+		this(new ArrayList<Relation>());
 	}
-
-	public RelationModel(Relation baseRelation, List<Relation> joinRelations) {
-		setBaseRelation(baseRelation);
-		setJoinRelations(joinRelations);
-	}
-*/
 	
-/*
-	public RelationalContext getContext() {
-		return context;
+	public RelationModel(List<Relation> relations) {
+		relations = new ArrayList<Relation>();
 	}
 
-	public void setContext(RelationalContext context) {
-		this.context = context;
+	public List<Relation> getRelations() {
+		return relations;
 	}
-*/
 
-	public List<Relation> getEagerRelations() {
-		List<Relation> eagerRelations = new ArrayList<Relation>();
-		for(Relation relation : getJoinRelations()) {
-			if(relation.getFetching().equals(Fetching.EAGER))
-				eagerRelations.add(relation);
+	public void setRelations(List<Relation> relations) {
+		this.relations = new ArrayList<Relation>();
+		for(Relation relation : relations) {
+			addRelation(relation);
 		}
-		return eagerRelations;
 	}
-	/*
-	public List<Relation> getJoinRelations() {
-		return new ArrayList<Relation>();
-	}
-	*/
-	public List<Relation> getJoinRelations() {
-		return Collections.unmodifiableList(joinRelations);
+
+	public void addRelation(Relation relation) {
+		relations.add(relation);
+		relation.attach(this);
 	}
 	
-	private void setJoinRelations(List<Relation> joinRelations) {
-		this.joinRelations = joinRelations;
+	public Schema getSchemaOrThrow() {
+		if(schema == null)
+			throw new RuntimeException("RelationModel not attached to a Schema");
+		return getSchema();
 	}
 	
-	public void setJoinRelations(Relation ...joinRelations) {
-		setJoinRelations(Arrays.<Relation>asList(joinRelations));
+	public Schema getSchema() {
+		return schema;
 	}
 	
-	public int size() {
-		return getJoinRelations().size();
+	public void attach(Schema schema) {
+		this.schema = schema;
 	}
 	
-	public Table getBaseTable() {
-		return baseTable;
+	public void accept(SchemaVisitor visitor) {
+		if(visitor.doVisit(this)) {
+			for(Relation relation : getRelations()) {
+				relation.accept(visitor);
+			}
+		}
 	}
 
-	public final String BASE_RELATION_NAME = "BASE RELATION";
-	public void setBaseTable(Table baseTable) {
-		this.baseTable = baseTable;
-		String baseRelationName = BASE_RELATION_NAME+"_"+baseTable.getName();
-		setBaseRelation(createBaseRelation(baseRelationName, baseTable));
+	public List<TableRelation> getTableRelations(DBTable table) {
+		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
+		for(Relation relation : getRelations()) {
+			tableRelations.addAll(relation.getTableRelations(table));
+		}
+		return tableRelations;
 	}
-
-	protected Relation createBaseRelation(String baseRelationName, Table baseTable) {
-		return new Relation(this, baseRelationName, baseTable);
+	
+	public List<TableRelation> getEagerRelations(DBTable table) {
+		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
+		for(TableRelation tableRelation : getTableRelations(table)) {
+			if(tableRelation.getFetching().equals(Fetching.EAGER))
+				tableRelations.add(tableRelation);
+		}
+		return tableRelations;
 	}
-
-	private void setBaseRelation(Relation baseRelation) {
-		this.baseRelation = baseRelation;
+	
+	public List<TableRelation> getLazyRelations(DBTable table) {
+		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
+		for(TableRelation tableRelation : getTableRelations(table)) {
+			if(tableRelation.getFetching().equals(Fetching.LAZY))
+				tableRelations.add(tableRelation);
+		}
+		return tableRelations;
 	}
-
-	public Relation getBaseRelation() {
-		return baseRelation;
-	}
-
+	
 	@Override
 	public Iterator<Relation> iterator() {
-		return getJoinRelations().iterator();
+		return relations.iterator();
 	}
 
 
 }
+
+
