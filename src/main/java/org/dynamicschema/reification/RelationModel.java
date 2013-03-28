@@ -16,7 +16,7 @@ public class RelationModel implements Iterable<Relation> {
 	}
 	
 	public RelationModel(List<Relation> relations) {
-		relations = new ArrayList<Relation>();
+		this.relations = new ArrayList<Relation>();
 	}
 
 	public Relation getRelation(DBTable relationName) {
