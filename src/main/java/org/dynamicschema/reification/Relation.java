@@ -123,16 +123,6 @@ public class Relation {
 		return tableRelations;
 	}
 
-
-
-//	public boolean includes(Table table) {
-//		for(Table auxTable : getTables()) {
-//			if(auxTable.equals(table))
-//				return true;
-//		}
-//		return false;
-//	}
-	
 	public RelationModel getRelationModelOrThrow() {
 		if(relationModel == null)
 			throw new RuntimeException("Relation not attached to a RelationModel");
@@ -156,7 +146,40 @@ public class Relation {
 		visitor.doVisit(this);
 	}
 	
-	public int getRoleIndex(String role) { //TODO verify this. It seems to be wrong since a table can be more than once in a relation
+	public Table getTable(int index) {
+		return relationMembers.get(index).getTable();
+	}
+	
+	public Table getTableWithRole(String role) {
+		return relationMembers.get(getRoleIndex(role)).getTable();
+	}
+
+	private TableRelation getTableRelation(int index) {
+		return new TableRelation(this, index);
+	}
+	
+	public TableRelation getTableRelationWithRole(String role) {
+		return getTableRelation(getRoleIndex(role));
+	}
+	
+	public Occurrence getOccurrence(int index) {
+		return relationMembers.get(index).getOccurrence();
+	}
+	
+	public Occurrence getOccurrenceForRole(String role) {
+		return relationMembers.get(getRoleIndex(role)).getOccurrence();
+	}
+	
+	public Fetching getFetching(int index) {
+		return fetchings.get(index);
+	}
+
+	public Fetching getFetchingForRole(String role) {
+		return fetchings.get(getRoleIndex(role));
+	}
+	
+	
+	public int getRoleIndex(String role) {
 		List<String> roles = getRoles();
 		for(int i=0; i<roles.size(); i++) {
 			if(role.equals(roles.get(i))) {
@@ -164,38 +187,6 @@ public class Relation {
 			}
 		}
 		throw new RuntimeException("Unrecognized role: " + role + " in relation: " + name);
-	}
-	
-	public Table getTableWithRole(String role) {
-		return relationMembers.get(getRoleIndex(role)).getTable();
-	}
-	
-	public Table getTable(int index) {
-		return relationMembers.get(index).getTable();
-	}
-	
-	public Occurrence getOccurrence(String role) {
-		return relationMembers.get(getRoleIndex(role)).getOccurrence();
-	}
-	
-	public Occurrence getOccurrence(int index) {
-		return relationMembers.get(index).getOccurrence();
-	}
-	
-	public Fetching getFetchingForRole(String role) {
-		return fetchings.get(getRoleIndex(role));
-	}
-	
-	public Fetching getFetching(int index) {
-		return fetchings.get(index);
-	}
-	
-	public TableRelation getTableRelationWithRole(String role) {
-		return new TableRelation(this, getRoleIndex(role));
-	}
-	
-	private TableRelation getTableRelation(int index) {
-		return new TableRelation(this, index);
 	}
 	
 	/**

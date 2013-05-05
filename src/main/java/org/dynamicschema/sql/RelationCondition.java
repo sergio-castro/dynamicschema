@@ -61,46 +61,6 @@ public abstract class RelationCondition {
 		return matchedMethod;
 	}
 	
-	/*
-	public static class A {
-		
-		public boolean eval(Table ...tables){
-			List<Class> paramClasses = new ArrayList<Class>();
-			Method m = null;
-			for(int i=0; i<tables.length; i++)
-				paramClasses.add(Table.class);
-			try {
-				m = this.getClass().getMethod("eval", paramClasses.toArray(new Class[]{}));
-			} catch (SecurityException e) {
-				throw(e);
-			} catch (NoSuchMethodException e) {
-				throw new RuntimeException("A condition should be provided", e);
-			}
-			try {
-				return (Boolean) m.invoke(this, tables);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		
-		
-	}
-	
-	public static class B extends A {
-		public boolean eval(Table t){
-			System.out.println(t);
-			return true;
-		}
-	}
-	
-	public static void main(String[] args) {
-		Table t = null;
-		System.out.println(new B().eval(new Table[]{t}));
-	}
-	*/
+
 
 }

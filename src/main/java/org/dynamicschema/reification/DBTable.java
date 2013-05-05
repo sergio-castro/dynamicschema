@@ -78,20 +78,15 @@ public class DBTable extends AbstractTable {
 	public String getColumnName(Column column) {
 		return getName()+"."+column.getSimpleName();
 	}
-
-//	public TableRelation getTableRelation(String relationName, DBTable tableRole) {
-//		Relation relation = getSchemaOrThrow().getRelationModel().getRelation(relationName);
-//		return relation.getTableRelation(tableRole);
-//	}
 	
-	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings) {
-		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings);
+	public ContextedQueryBuilder select() {
+		SelectBuilderEagerRelationsVisitor selectBuilderVisitor = new SelectBuilderEagerRelationsVisitor(this);
 		selectBuilderVisitor.visit();
 		return selectBuilderVisitor.getQueryBuilder();
 	}
 	
-	public ContextedQueryBuilder select() {
-		SelectBuilderEagerRelationsVisitor selectBuilderVisitor = new SelectBuilderEagerRelationsVisitor(this);
+	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings) {
+		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings);
 		selectBuilderVisitor.visit();
 		return selectBuilderVisitor.getQueryBuilder();
 	}

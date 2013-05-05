@@ -23,7 +23,10 @@ public interface Table {
 	 */
 	public RelationCondition getFiltering();
 	
-
+	/**
+	 * The evaluation of the filtering condition in the context of the declaring table
+	 * @return
+	 */
 	public SqlCondition evalFiltering();
 	
 	/**
