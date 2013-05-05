@@ -7,6 +7,11 @@ import java.util.List;
 
 import org.dynamicschema.reification.Table;
 
+/**
+ * Join condition between the tables in a relation
+ * @author sergioc
+ *
+ */
 public abstract class RelationCondition {
 
 	public static final String EVAL_METHOD_NAME = "eval";

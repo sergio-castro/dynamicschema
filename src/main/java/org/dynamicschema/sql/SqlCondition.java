@@ -4,6 +4,11 @@ import static org.dynamicschema.sql.Sql.AND;
 import static org.dynamicschema.sql.Sql.NOT;
 import static org.dynamicschema.sql.Sql.OR;
 
+/**
+ * A utility class for building (textual) SQL conditions
+ * @author sergioc
+ *
+ */
 public class SqlCondition {
 
 	private StringBuilder builder;
@@ -19,24 +24,18 @@ public class SqlCondition {
 	}
 	
 	public SqlCondition and(String condition) {
-		if(condition == null || condition.isEmpty())
-			return this;
-		if(isEmpty()) 
-			builder.append(condition);
-		else {
-			and();
+		if(!(condition == null || condition.isEmpty())) {
+			if(!isEmpty())
+				and();
 			builder.append(condition);
 		}
 		return this;
 	}
 	
 	public SqlCondition or(String condition) {
-		if(condition == null || condition.isEmpty())
-			return this;
-		if(isEmpty()) 
-			builder.append(condition);
-		else {
-			or();
+		if(!(condition == null || condition.isEmpty())) {
+			if(!isEmpty())
+				or();
 			builder.append(condition);
 		}
 		return this;

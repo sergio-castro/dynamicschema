@@ -7,6 +7,8 @@ import com.google.common.base.Joiner;
 
 public class PrimaryKey extends ColumnConstraint {
 	
+	public static String PRIMARY_KEY = "PRIMARY KEY";
+	
 	private List<String> columnsNames;
 
 	public PrimaryKey(List<String> columnsNames) {

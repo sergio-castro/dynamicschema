@@ -79,10 +79,10 @@ public class DBTable extends AbstractTable {
 		return getName()+"."+column.getSimpleName();
 	}
 
-	public TableRelation getTableRelation(DBTable relationName, DBTable tableRole) {
-		Relation relation = getSchemaOrThrow().getRelationModel().getRelation(relationName);
-		return relation.getTableRelation(tableRole);
-	}
+//	public TableRelation getTableRelation(String relationName, DBTable tableRole) {
+//		Relation relation = getSchemaOrThrow().getRelationModel().getRelation(relationName);
+//		return relation.getTableRelation(tableRole);
+//	}
 	
 	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings) {
 		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings);

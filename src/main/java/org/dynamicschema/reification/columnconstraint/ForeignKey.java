@@ -6,6 +6,9 @@ import com.google.common.base.Joiner;
 
 public class ForeignKey extends ColumnConstraint {
 
+	public static String FOREIGN_KEY = "FOREIGN KEY";
+	public static String REFERENCES = "REFERENCES";
+	
 	private List<String> localColumnsNames;
 	private String foreignTableName;
 	private List<String> foreignColumnsNames;

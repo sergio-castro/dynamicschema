@@ -7,18 +7,32 @@ import org.dynamicschema.visitor.CreateSchemaScriptVisitor;
 import org.dynamicschema.visitor.DropSchemaScriptVisitor;
 import org.dynamicschema.visitor.SchemaVisitor;
 
+/**
+ * A databas schema.
+ * Encapsulate a list of tables and a relation model.
+ * @author sergioc
+ *
+ */
 public class Schema {
 
 	private List<DBTable> tables;
 	private RelationModel relationModel;
 	
-	
-	public DBTable getTable(String tableName) {
+	/**
+	 * 
+	 * @param tableName the name of the table
+	 * @return a table with a given name
+	 */
+	public DBTable getTable(String tableName) {	
+		DBTable matchedTable = null;
 		for(DBTable table : getTables()) {
-			if(table.getName().equals(tableName))
-				return table;
+			if(table.getName().equals(tableName)) {
+				matchedTable = table;
+				break;
+			}
+				
 		}
-		return null;
+		return matchedTable;
 	}
 	
 	public List<DBTable> getTables() {
@@ -51,9 +65,8 @@ public class Schema {
 			for(DBTable table : getTables()) {
 				table.accept(visitor);
 			}
-			//TODO visit the relations also
+			relationModel.accept(visitor);
 		}
-		
 	}
 	
 	public String createSchemaScript() {

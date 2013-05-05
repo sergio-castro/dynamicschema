@@ -19,7 +19,12 @@ public class RelationModel implements Iterable<Relation> {
 		setRelations(relations);
 	}
 
-	public Relation getRelation(DBTable relationName) {
+	/**
+	 * Answers a relation given its relation name
+	 * @param relationName
+	 * @return
+	 */
+	public Relation getRelation(String relationName) {
 		Relation relation = null;
 		for(Relation r : relations) {
 			if(r.getName().equals(relationName)) {
@@ -68,6 +73,12 @@ public class RelationModel implements Iterable<Relation> {
 		}
 	}
 
+	/**
+	 * A TableRelation models the occurrence of a table in a relation.
+	 * This method answers a list of all the occurrences of a given table in this relation model
+	 * @param table
+	 * @return
+	 */
 	public List<TableRelation> getTableRelations(DBTable table) {
 		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
 		for(Relation relation : getRelations()) {

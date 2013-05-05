@@ -18,6 +18,31 @@ public class Relation {
 	private List<RelationMember> relationMembers;
 	private List<Fetching> fetchings;
 
+	
+	private static List<Fetching> defaultFetchings(List<RelationMember> relationMembers) {
+		List<Fetching> fetchings = new ArrayList<Fetching>();
+		for(int i = 0; i<relationMembers.size(); i++) {
+			fetchings.add(defaultFetching(relationMembers, i));
+		}
+		return fetchings;
+	}
+	
+	private static Fetching defaultFetching(List<RelationMember> relationMembers, int pos) {
+		if(relationMembers.size() > 2) //terciary or bigger relationship
+			return Fetching.LAZY;
+		String targetTableName = relationMembers.get(pos).getTable().getName();
+		for(int i = 0; i < relationMembers.size(); i++) { //there are only two tables in the relation (binary relation)
+			if(i == pos)
+				continue;
+			if(relationMembers.get(i).getTable().getName().equals(targetTableName)) //recursive relationship
+				return Fetching.LAZY;
+			if(!relationMembers.get(i).getOccurrence().equals(Occurrence.ONE)) //if there is at least one table with a cardinality different than ONE, then the fetching is lazy
+				return Fetching.LAZY;
+		}
+		return Fetching.EAGER;
+	}
+	
+	
 	public Relation(String name, List<RelationMember> relationMembers, RelationCondition condition) {
 		this(name, relationMembers, condition, defaultFetchings(relationMembers));
 	}
@@ -29,29 +54,6 @@ public class Relation {
 		setFetchings(fetchings);
 	}
 
-	private static Fetching defaultFetching(List<RelationMember> relationMembers, int pos) {
-		if(relationMembers.size() > 2) //terciary or bigger relationship
-			return Fetching.LAZY;
-		String targetTableName = relationMembers.get(pos).getTableName();
-		for(int i = 0; i < relationMembers.size(); i++) {
-			if(i == pos)
-				continue;
-			if(relationMembers.get(i).getTableName().equals(targetTableName)) //recursive relationship
-				return Fetching.LAZY;
-			if(!relationMembers.get(i).getOccurrence().equals(Occurrence.ONE)) //if there is at least table with a cardinality different than one, then the fetching is lazy
-				return Fetching.LAZY;
-		}
-		return Fetching.EAGER;
-	}
-	
-	private static List<Fetching> defaultFetchings(List<RelationMember> relationMembers) {
-		List<Fetching> fetchings = new ArrayList<Fetching>();
-		for(int i = 0; i<relationMembers.size(); i++) {
-			fetchings.add(defaultFetching(relationMembers, i));
-		}
-		return fetchings;
-	}
-	
 	public String getName() {
 		return name;
 	}
@@ -65,7 +67,7 @@ public class Relation {
 	public List<DBTable> getTables() {
 		List<DBTable> tables = new ArrayList<DBTable>();
 		for(RelationMember relationMember : relationMembers) {
-			tables.add(getSchemaOrThrow().getTable(relationMember.getTableName()));
+			tables.add(relationMember.getTable());
 		}
 		return tables;
 	}
@@ -113,7 +115,8 @@ public class Relation {
 	public List<TableRelation> getTableRelations(DBTable table) {
 		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
 		for(int i=0; i<relationMembers.size(); i++) {
-			if(relationMembers.get(i).getTableName().equals(table)) {
+			RelationMember relationMember = relationMembers.get(i);
+			if(relationMember.getTable().getName().equals(table.getName())) {
 				tableRelations.add(getTableRelation(i));
 			}
 		}
@@ -153,17 +156,7 @@ public class Relation {
 		visitor.doVisit(this);
 	}
 	
-	public TableRelation getTableRelation(Table table) {
-		TableRelation tableRelation = null;
-		for(int i=0; i<relationMembers.size(); i++) {
-			if(relationMembers.get(i).getTableName().equals(table.getName())) {
-				tableRelation = new TableRelation(this, i);
-			}
-		}
-		return tableRelation;
-	}
-	
-	public int getRoleIndex(DBTable role) {
+	public int getRoleIndex(String role) { //TODO verify this. It seems to be wrong since a table can be more than once in a relation
 		List<String> roles = getRoles();
 		for(int i=0; i<roles.size(); i++) {
 			if(role.equals(roles.get(i))) {
@@ -173,17 +166,15 @@ public class Relation {
 		throw new RuntimeException("Unrecognized role: " + role + " in relation: " + name);
 	}
 	
-	public Table getTable(DBTable role) {
-		String tableName = relationMembers.get(getRoleIndex(role)).getTableName();
-		return getSchemaOrThrow().getTable(tableName);
+	public Table getTableWithRole(String role) {
+		return relationMembers.get(getRoleIndex(role)).getTable();
 	}
 	
 	public Table getTable(int index) {
-		String tableName = relationMembers.get(index).getTableName();
-		return getSchemaOrThrow().getTable(tableName);
+		return relationMembers.get(index).getTable();
 	}
 	
-	public Occurrence getOccurrence(DBTable role) {
+	public Occurrence getOccurrence(String role) {
 		return relationMembers.get(getRoleIndex(role)).getOccurrence();
 	}
 	
@@ -191,7 +182,7 @@ public class Relation {
 		return relationMembers.get(index).getOccurrence();
 	}
 	
-	public Fetching getFetching(DBTable role) {
+	public Fetching getFetchingForRole(String role) {
 		return fetchings.get(getRoleIndex(role));
 	}
 	
@@ -199,7 +190,7 @@ public class Relation {
 		return fetchings.get(index);
 	}
 	
-	public TableRelation getTableRelation(DBTable role) {
+	public TableRelation getTableRelationWithRole(String role) {
 		return new TableRelation(this, getRoleIndex(role));
 	}
 	
@@ -207,6 +198,12 @@ public class Relation {
 		return new TableRelation(this, index);
 	}
 	
+	/**
+	 * Answers a list of the roles in the relation according to the Role annotation in the eval method.
+	 * In most cases these annotations are optional. 
+	 * However, if the same table appears more than once in a relation (e.g., a recursive relation) this annotation should be present in all the occurrences to solve ambiguities.
+	 * @return
+	 */
 	public List<String> getRoles() {
 		String[] roles = new String[relationMembers.size()];
 		Method evalMethod = condition.getCustomEvalMethod();
@@ -216,10 +213,10 @@ public class Relation {
 		Annotation[][] paramAnnotations = evalMethod.getParameterAnnotations();
 		for(int i = 0; i<paramAnnotations.length; i++) {
 			for(Annotation annotation : paramAnnotations[i]) {
-				if(annotation.annotationType().equals(Role.class)) {
+				if(annotation.annotationType().equals(Role.class)) { //we have just found a Role annotation
 					Role roleAnnotation = (Role)annotation;
 					roles[i] = roleAnnotation.value();
-					break;
+					break; //ignore other any annotation in the current parameter
 				}
 			}
 		}

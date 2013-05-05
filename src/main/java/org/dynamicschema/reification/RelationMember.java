@@ -7,20 +7,20 @@ package org.dynamicschema.reification;
  */
 public class RelationMember {
 
-	private String tableName;
+	private DBTable table;
 	private Occurrence occurrence;
 	
-	public RelationMember(String tableName, Occurrence occurrence) {
-		this.tableName = tableName;
+	public RelationMember(DBTable table, Occurrence occurrence) {
+		this.table = table;
 		this.occurrence = occurrence;
 	}
 
-	public String getTableName() {
-		return tableName;
+	public DBTable getTable() {
+		return table;
 	}
 
-	public void setTableName(String table) {
-		this.tableName = table;
+	public void setTable(DBTable table) {
+		this.table = table;
 	}
 
 	public Occurrence getOccurrence() {
@@ -37,7 +37,7 @@ public class RelationMember {
 		int result = 1;
 		result = prime * result
 				+ ((occurrence == null) ? 0 : occurrence.hashCode());
-		result = prime * result + ((tableName == null) ? 0 : tableName.hashCode());
+		result = prime * result + ((table == null) ? 0 : table.hashCode());
 		return result;
 	}
 
@@ -52,10 +52,10 @@ public class RelationMember {
 		RelationMember other = (RelationMember) obj;
 		if (occurrence != other.occurrence)
 			return false;
-		if (tableName == null) {
-			if (other.tableName != null)
+		if (table == null) {
+			if (other.table != null)
 				return false;
-		} else if (!tableName.equals(other.tableName))
+		} else if (!table.equals(other.table))
 			return false;
 		return true;
 	}
