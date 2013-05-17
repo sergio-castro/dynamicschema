@@ -19,6 +19,27 @@ public class ForeignKey extends ColumnConstraint {
 		this.foreignColumnsNames = foreignColumnsNames;
 	}
 	
+	/**
+	 * @return the localColumnsNames
+	 */
+	public List<String> getLocalColumnsNames() {
+		return localColumnsNames;
+	}
+
+	/**
+	 * @return the foreignTableName
+	 */
+	public String getForeignTableName() {
+		return foreignTableName;
+	}
+
+	/**
+	 * @return the foreignColumnsNames
+	 */
+	public List<String> getForeignColumnsNames() {
+		return foreignColumnsNames;
+	}
+
 	@Override
 	public String toString() {
 		return FOREIGN_KEY + "("+Joiner.on(", ").join(localColumnsNames)+")" + " " + REFERENCES + " " + foreignTableName + "("+ Joiner.on(", ").join(foreignColumnsNames) + ")";

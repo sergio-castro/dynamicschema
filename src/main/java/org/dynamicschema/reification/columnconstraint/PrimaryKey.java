@@ -19,6 +19,13 @@ public class PrimaryKey extends ColumnConstraint {
 		this(Arrays.asList(columnsNames));
 	}
 
+	/**
+	 * @return the columnsNames
+	 */
+	public List<String> getColumnsNames() {
+		return columnsNames;
+	}
+
 	@Override
 	public String toString() {
 		return PRIMARY_KEY + "("+Joiner.on(", ").join(columnsNames)+")";

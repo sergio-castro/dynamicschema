@@ -60,6 +60,13 @@ public class ColumnModel implements Iterable<Column> {
 		return Collections.unmodifiableList(columns);
 	}
 	
+	/**
+	 * @return the columnsConstraints
+	 */
+	public List<ColumnConstraint> getColumnsConstraints() {
+		return columnsConstraints;
+	}
+
 	public void addColumn(Column column) {
 		columns.add(column);
 		column.attach(this);
