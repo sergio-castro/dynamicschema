@@ -43,5 +43,12 @@ public interface Table {
 	public String col(String columnName);
 
 	public String fromClauseName();
+
+	
+	/**
+	 * The name(s) of the primary key of the table
+	 * @return
+	 */
+	public List<String> getIDColumnNames();
 	
 }

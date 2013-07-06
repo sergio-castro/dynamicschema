@@ -8,6 +8,7 @@ public class ForeignKey extends ColumnConstraint {
 
 	public static String FOREIGN_KEY = "FOREIGN KEY";
 	public static String REFERENCES = "REFERENCES";
+	public static String FK_INDEX = "FK";
 	
 	private List<String> localColumnsNames;
 	private String foreignTableName;
@@ -43,6 +44,10 @@ public class ForeignKey extends ColumnConstraint {
 	@Override
 	public String toString() {
 		return FOREIGN_KEY + "("+Joiner.on(", ").join(localColumnsNames)+")" + " " + REFERENCES + " " + foreignTableName + "("+ Joiner.on(", ").join(foreignColumnsNames) + ")";
+	}
+	
+	public String toStringIndex(){
+		return  "("+Joiner.on(", ").join(localColumnsNames)+")";
 	}
 	
 }

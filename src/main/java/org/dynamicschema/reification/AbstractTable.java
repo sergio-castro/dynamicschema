@@ -8,7 +8,7 @@ public abstract class AbstractTable implements Table {
 	public List<String> getColumnValues() {
 		List<String> columnValues = new ArrayList<String>();
 		for(Column column : getColumnModel().getColumns()) {
-			columnValues.add(col(column.getName()));
+			columnValues.add(col(column.getSimpleName())); //before: colum.getName()
 		}
 		return columnValues;
 	}

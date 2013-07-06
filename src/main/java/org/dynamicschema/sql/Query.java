@@ -7,7 +7,9 @@ import static org.dynamicschema.sql.Sql.LIMIT;
 import static org.dynamicschema.sql.Sql.ORDER_BY;
 import static org.dynamicschema.sql.Sql.SELECT;
 import static org.dynamicschema.sql.Sql.WHERE;
+import static org.dynamicschema.sql.Sql.DISTINCT;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -15,6 +17,7 @@ import com.google.common.base.Joiner;
 
 public class Query {
 
+	private final String SEPARATOR = "\n";
 	
 	private String columns;
 	private String tables;
@@ -24,6 +27,8 @@ public class Query {
 	private String groupBy;
 	private String having;
 	private Integer limit;
+	
+	
 	
 	public Query() {
 		
@@ -120,7 +125,7 @@ public class Query {
 	}
 
 	public String select() {
-		return SELECT + " " + columns;
+		return SELECT + " " + DISTINCT + " " + columns;
 	}
 	
 	public String from() {
@@ -128,9 +133,15 @@ public class Query {
 	}
 	
 	public String joinConditions() {
+		//Add
+		List<Join> jConditions = new ArrayList<Join>();
+		for (int i = joinConditions.size(); i > 0 ; i--) {
+			jConditions.add(joinConditions.get(i-1));
+		}
+		//End
 		String joinConditionsString = "";
 		if(joinConditions != null) {
-			joinConditionsString = Joiner.on(" ").join(joinConditions);
+			joinConditionsString = Joiner.on(SEPARATOR).join(jConditions); // before: joinConditions
 		}
 		return joinConditionsString;
 	}
@@ -167,7 +178,14 @@ public class Query {
 	
 	@Override
 	public String toString() {
-		return select() + " " + from() + " " + joinConditions() + " " + where() + " " + orderBy() + " " + groupBy() + " " + having() + " " + limit();
+		return select() + 
+			SEPARATOR + from() + 
+			SEPARATOR + joinConditions() +
+			SEPARATOR + where() +
+			SEPARATOR + orderBy() + 
+			SEPARATOR + groupBy() +
+			SEPARATOR + having() + 
+			SEPARATOR + limit();
 	}
 	
 	private boolean nullOrEmpty(String s) {

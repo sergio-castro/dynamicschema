@@ -1,5 +1,9 @@
 package org.dynamicschema.reification;
 
+import java.util.List;
+
+import org.dynamicschema.reification.columnconstraint.ColumnConstraint;
+import org.dynamicschema.reification.columnconstraint.PrimaryKey;
 import org.dynamicschema.visitor.SchemaVisitor;
 
 public class Column {
@@ -26,6 +30,22 @@ public class Column {
 
 	public String getType() {
 		return type;
+	}
+	
+	public boolean isPrimaryKey(){
+		List<ColumnConstraint> constr = getColumnModelOrThrow().getColumnsConstraints();
+		PrimaryKey pk = null;
+		for (ColumnConstraint columnConstraint : constr) {
+			if( columnConstraint instanceof PrimaryKey)
+				pk = (PrimaryKey) columnConstraint;
+		}
+		List<String> colNames = pk.getColumnsNames();
+		if(colNames.size() > 1)
+				return false;
+		
+		if(colNames.get(0).equals(getSimpleName()))
+				return true;
+		return false;
 	}
 
 	public void setType(String type) {
@@ -67,6 +87,11 @@ public class Column {
 		StringBuilder sb = new StringBuilder(getSimpleName());
 		if(type != null)
 			sb.append(" " + type);
+	
+//		if(isPrimaryKey()){
+//			sb.append(" " + PrimaryKey.PRIMARY_KEY + " " + PrimaryKey.AUTOINCREMENT);
+//		}
+		
 		return sb.toString();
 	}
 	

@@ -10,8 +10,11 @@ import java.util.Map.Entry;
 
 import org.dynamicschema.context.ContextedQueryBuilder;
 import org.dynamicschema.context.RelationalContextManager;
+import org.dynamicschema.reification.columnconstraint.ColumnConstraint;
+import org.dynamicschema.reification.columnconstraint.PrimaryKey;
 import org.dynamicschema.sql.RelationBuilder;
 import org.dynamicschema.sql.RelationCondition;
+import org.dynamicschema.sql.Sql;
 import org.dynamicschema.sql.SqlCondition;
 import org.dynamicschema.visitor.SchemaVisitor;
 import org.dynamicschema.visitor.context.SelectBuilderEagerRelationsVisitor;
@@ -48,11 +51,33 @@ public class DBTable extends AbstractTable {
 	}
 	
 	public String col(String columnName) {
-		return getColumnModel().getColumn(columnName).toString();
+		Column col  = getColumnModel().getColumn(columnName);
+		if(col != null)
+				return col.toString();
+		return null;
 	}
 	
 	public List<TableRelation> getTableRelations() {
 		return getSchemaOrThrow().getRelationModel().getTableRelations(this);
+	}
+	
+	public TableRelation getTabRelation(String relName, String role){
+		
+		List<TableRelation> tabRelations = getTableRelations();
+		for (TableRelation tableRelation : tabRelations) {
+			 Relation relation = tableRelation.getRelation();
+			 
+			if(relation.getName().equals(relName)){
+				if(!relation.isBinaryRecursive())
+					return tableRelation;
+				
+				if(role == null)
+						throw new RuntimeException("Expecting Role name to differentiate tables in recursive relation");
+				TableRelation tabRelRecursive = relation.getTableRelationWithRole(role);
+				return tabRelRecursive;
+			}	
+		}
+		return null;
 	}
 	
 	public RelationCondition getFiltering() {
@@ -71,7 +96,7 @@ public class DBTable extends AbstractTable {
 		if (getFiltering() == null)
 				return "";
 		else
-			return getFiltering().eval(this).toString();//TODO fix
+			return getFiltering().eval(this).toString();
 	}
 	
 
@@ -80,13 +105,35 @@ public class DBTable extends AbstractTable {
 	}
 	
 	public ContextedQueryBuilder select() {
-		SelectBuilderEagerRelationsVisitor selectBuilderVisitor = new SelectBuilderEagerRelationsVisitor(this);
+		return select(new ArrayList<Table>());
+	}
+	
+	
+	//Relations to visit
+	public ContextedQueryBuilder restrictedSelect(List<Relation> relations2Visit){
+		return restrictedSelect(relations2Visit, new ArrayList<Table>());
+	}
+	
+	public ContextedQueryBuilder restrictedSelect(List<Relation> relations2Visit, List<Table> tables2Select){
+		SelectBuilderEagerRelationsVisitor visitor = new SelectBuilderEagerRelationsVisitor(this, tables2Select, relations2Visit);
+		visitor.visit();
+		return visitor.getQueryBuilder();
+	}
+	
+	//Addendum
+	public ContextedQueryBuilder select(List<Table> additinalTables2Select){
+		SelectBuilderEagerRelationsVisitor selectBuilderVisitor = new SelectBuilderEagerRelationsVisitor(this,additinalTables2Select);
 		selectBuilderVisitor.visit();
 		return selectBuilderVisitor.getQueryBuilder();
 	}
 	
+
 	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings) {
-		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings);
+		return lazyRelationSelect(tableRelation, columnBindings, new ArrayList<Table>());
+	}
+	
+	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings, List<Table> tables) {
+		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings,tables);
 		selectBuilderVisitor.visit();
 		return selectBuilderVisitor.getQueryBuilder();
 	}
@@ -138,8 +185,12 @@ public class DBTable extends AbstractTable {
 		return CREATE_TABLE + " " + toTableDefString() + ";";
 	}
 	
+	public List<String> createIndexStatements(){
+		return getColumnModel().toColumnModelIndicesDefString();
+	}
+	
 	public String dropTableStatement() {
-		return DROP_TABLE + " " + name + ";";
+		return DROP_TABLE + " "+ Sql.IF_EXISTS + " " + name + ";";
 	}
 	
 	public Schema getSchemaOrThrow() {
@@ -179,6 +230,33 @@ public class DBTable extends AbstractTable {
 	public int hashCode() {
 		return getName().hashCode();
 	}
+
+	public List<String> getIDColumnNames() {
+		
+		List<String> idNamesList = new ArrayList<String>();
+		List<ColumnConstraint> colConstr = getColumnModel().getColumnsConstraints();
+		PrimaryKey pkConstr = null;
+		for (ColumnConstraint constr : colConstr) {
+			if( constr instanceof PrimaryKey)
+					pkConstr = (PrimaryKey) constr;
+		}
+		
+		if(pkConstr == null)
+			throw new RuntimeException("No Primary Key was found!!!");
+
+		List<String> colNames = pkConstr.getColumnsNames();
+	
+		for (String colID : colNames) {
+			idNamesList.add(colID);
+		}
+		return idNamesList;
+	}
+
+
+
+	
+
+
 	
 
 	

@@ -87,6 +87,8 @@ public class RelationModel implements Iterable<Relation> {
 		return tableRelations;
 	}
 	
+
+	
 	public List<TableRelation> getEagerRelations(DBTable table) {
 		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
 		for(TableRelation tableRelation : getTableRelations(table)) {
@@ -109,7 +111,33 @@ public class RelationModel implements Iterable<Relation> {
 	public Iterator<Relation> iterator() {
 		return relations.iterator();
 	}
-
+	
+	
+	/*
+	 * Get relation  with between 2 tables and with a given name
+	 */
+	public Relation getRelation(String table1_Name, String table2_Name, String rel_name){
+		for (Relation  rel : getRelations()) {
+			
+			if(rel.isBinary() && rel.getName().equals(rel_name)){
+			
+				List<DBTable> tables = rel.getTables();
+				if(containsTableWithName(tables, table1_Name) && containsTableWithName(tables, table2_Name))
+						return rel;
+			}
+		}
+		return null;
+	}
+	
+	private boolean containsTableWithName(List<DBTable> tables, String name){
+		
+		for (DBTable dbTable : tables) {
+			if(dbTable.getName().equals(name))
+				return true;
+				
+		}
+		return false;
+	}
 
 }
 

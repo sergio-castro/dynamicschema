@@ -8,6 +8,8 @@ import com.google.common.base.Joiner;
 public class PrimaryKey extends ColumnConstraint {
 	
 	public static String PRIMARY_KEY = "PRIMARY KEY";
+	public static String AUTOINCREMENT = "AUTOINCREMENT";
+	public static String PK_INDEX = "PK";
 	
 	private List<String> columnsNames;
 
@@ -29,6 +31,10 @@ public class PrimaryKey extends ColumnConstraint {
 	@Override
 	public String toString() {
 		return PRIMARY_KEY + "("+Joiner.on(", ").join(columnsNames)+")";
+	}
+	
+	public String toStringIndex(){
+		return  "("+Joiner.on(", ").join(columnsNames)+")";
 	}
 
 }

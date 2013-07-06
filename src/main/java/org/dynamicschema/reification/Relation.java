@@ -18,7 +18,7 @@ public class Relation {
 	private List<RelationMember> relationMembers;
 	private List<Fetching> fetchings;
 
-	
+
 	private static List<Fetching> defaultFetchings(List<RelationMember> relationMembers) {
 		List<Fetching> fetchings = new ArrayList<Fetching>();
 		for(int i = 0; i<relationMembers.size(); i++) {
@@ -26,7 +26,7 @@ public class Relation {
 		}
 		return fetchings;
 	}
-	
+
 	private static Fetching defaultFetching(List<RelationMember> relationMembers, int pos) {
 		if(relationMembers.size() > 2) //terciary or bigger relationship
 			return Fetching.LAZY;
@@ -41,12 +41,12 @@ public class Relation {
 		}
 		return Fetching.EAGER;
 	}
-	
-	
+
+
 	public Relation(String name, List<RelationMember> relationMembers, RelationCondition condition) {
 		this(name, relationMembers, condition, defaultFetchings(relationMembers));
 	}
-	
+
 	public Relation(String name, List<RelationMember> relationMembers, RelationCondition condition, List<Fetching> fetchings) {
 		setName(name);
 		setRelationMembers(relationMembers);
@@ -63,7 +63,7 @@ public class Relation {
 			throw new RuntimeException(name+" is not a valid name for a relation");
 		this.name = name;
 	}
-	
+
 	public List<DBTable> getTables() {
 		List<DBTable> tables = new ArrayList<DBTable>();
 		for(RelationMember relationMember : relationMembers) {
@@ -84,9 +84,9 @@ public class Relation {
 		return relationMembers;
 	}
 
-//	public boolean isUnary() {
-//		return relationMembers.size() == 1;
-//	}
+	//	public boolean isUnary() {
+	//		return relationMembers.size() == 1;
+	//	}
 
 	public boolean isBinary() {
 		return relationMembers.size() == 2;
@@ -94,6 +94,16 @@ public class Relation {
 
 	public boolean isTerciary() {
 		return relationMembers.size() == 3;
+	}
+
+
+	public boolean isBinaryRecursive(){
+		Table table1 = relationMembers.get(0).getTable();
+		Table table2 = relationMembers.get(1).getTable();
+		boolean isB = isBinary();
+		boolean eq = table1.equals(table2);
+		return (isB && eq); 
+
 	}
 
 	public void setRelationMembers(List<RelationMember> relationMembers) {
@@ -107,19 +117,22 @@ public class Relation {
 	public void setFetchings(List<Fetching> fetchings) {
 		this.fetchings = fetchings;
 	}
-	
+
 	public void attach(RelationModel relationModel) {
 		this.relationModel = relationModel;
 	}
-	
+
 	public List<TableRelation> getTableRelations(DBTable table) {
 		List<TableRelation> tableRelations = new ArrayList<TableRelation>();
+
 		for(int i=0; i<relationMembers.size(); i++) {
 			RelationMember relationMember = relationMembers.get(i);
 			if(relationMember.getTable().getName().equals(table.getName())) {
 				tableRelations.add(getTableRelation(i));
 			}
 		}
+
+
 		return tableRelations;
 	}
 
@@ -128,28 +141,28 @@ public class Relation {
 			throw new RuntimeException("Relation not attached to a RelationModel");
 		return getRelationModel();
 	}
-	
+
 	public RelationModel getRelationModel() {
 		return relationModel;
 	}
-	
+
 	public Schema getSchemaOrThrow() {
 		return getRelationModelOrThrow().getSchemaOrThrow();
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
-	
+
 	public void accept(SchemaVisitor visitor) {
 		visitor.doVisit(this);
 	}
-	
+
 	public Table getTable(int index) {
 		return relationMembers.get(index).getTable();
 	}
-	
+
 	public Table getTableWithRole(String role) {
 		return relationMembers.get(getRoleIndex(role)).getTable();
 	}
@@ -157,19 +170,19 @@ public class Relation {
 	private TableRelation getTableRelation(int index) {
 		return new TableRelation(this, index);
 	}
-	
+
 	public TableRelation getTableRelationWithRole(String role) {
 		return getTableRelation(getRoleIndex(role));
 	}
-	
+
 	public Occurrence getOccurrence(int index) {
 		return relationMembers.get(index).getOccurrence();
 	}
-	
+
 	public Occurrence getOccurrenceForRole(String role) {
 		return relationMembers.get(getRoleIndex(role)).getOccurrence();
 	}
-	
+
 	public Fetching getFetching(int index) {
 		return fetchings.get(index);
 	}
@@ -177,8 +190,8 @@ public class Relation {
 	public Fetching getFetchingForRole(String role) {
 		return fetchings.get(getRoleIndex(role));
 	}
-	
-	
+
+
 	public int getRoleIndex(String role) {
 		List<String> roles = getRoles();
 		for(int i=0; i<roles.size(); i++) {
@@ -188,7 +201,17 @@ public class Relation {
 		}
 		throw new RuntimeException("Unrecognized role: " + role + " in relation: " + name);
 	}
-	
+
+
+	public String getRoleAtIndex(int index){
+		List<String> roles = getRoles();
+		for (int i = 0; i < roles.size(); i++) {
+			if (i == index)
+				return roles.get(i);
+		}
+		throw new RuntimeException("Index: " + index +  " out of bound in relation: "+ name);
+	}
+
 	/**
 	 * Answers a list of the roles in the relation according to the Role annotation in the eval method.
 	 * In most cases these annotations are optional. 
@@ -214,7 +237,7 @@ public class Relation {
 		return Arrays.asList(roles);
 	}
 
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof Relation))
@@ -222,10 +245,10 @@ public class Relation {
 		Relation relation = (Relation)o;
 		return this.getName().equals(relation.getName());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return getName().hashCode();
 	}
-	
+
 }

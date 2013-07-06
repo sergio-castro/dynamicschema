@@ -1,5 +1,6 @@
 package org.dynamicschema.sql;
 
+import java.sql.SQLData;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +80,12 @@ public class QueryBuilder {
 	}
 
 	public String getColumns() {
-		return Joiner.on(", ").join(columns);
+		
+		List<String> columnsWithAliases = new ArrayList<String>();
+		for (String col : columns) {
+			columnsWithAliases.add(col + " " + Sql.AS + " \"" + col + "\"");
+		}
+		return Joiner.on(", ").join(columnsWithAliases);
 	}
 	
 	public SqlCondition where() {

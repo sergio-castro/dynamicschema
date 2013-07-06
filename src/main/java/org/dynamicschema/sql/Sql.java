@@ -41,7 +41,22 @@ public class Sql {
 	public static final String SET = "SET";
 	
 	
+	
 	//DDL
 	public static final String CREATE_TABLE = "CREATE TABLE";
 	public static final String DROP_TABLE = "DROP TABLE";
+	public static final String CREATE_INDEX = "CREATE INDEX";
+	public static final String CREATE_UNIQUE_INDEX = "CREATE UNIQUE INDEX";
+
+
+	
+	
+	//Expr
+	public static final String IF_EXISTS = "IF EXISTS";
+	
+	
+	//functions (specific to sqlite) 
+	public static final String ABS ="abs";
+	public static final String DATE = "date";
+	public static final String NOW = "'now'";
 }

@@ -26,17 +26,26 @@ public class TableNode extends RelationTree {
 		this.table = table;
 		this.tableIndex = 0;
 	}
-	
+
 	public TableNode(RelationNode parent, int tableIndex) {
 		super(parent, parent.getId() + RELATION_TABLE_SEP + TABLE_PREFIX + tableIndex);
 		this.table = parent.getRelation().getTable(tableIndex);
+		this.tableIndex = tableIndex;
+	}
+	
+	//Addendum 
+
+	public TableNode(RelationNode parent, Table table, int tableIndex) {
+		super(parent, parent.getId() + RELATION_TABLE_SEP + TABLE_PREFIX + tableIndex);
+		this.table = table;
 		this.tableIndex = tableIndex;
 	}
 
 	@Override
 	public List<RelationNode> getChildren() {
 		List<RelationNode> children = new ArrayList<RelationNode>();
-		List<TableRelation> tableRelations = getTable().getTableRelations();
+		Table table = getTable();
+		List<TableRelation> tableRelations = table.getTableRelations();
 		for(int i=0; i<tableRelations.size();i++) {
 			RelationNode relationNode = new RelationNode(this, i);
 			children.add(relationNode);
@@ -52,6 +61,9 @@ public class TableNode extends RelationTree {
 		return tableIndex;
 	}
 
+	public boolean holdsBaseTable(RelationalContextManager ctx){
+		return ctx.isBaseTable(getTable());
+	}
 	
 	@Override
 	public List<Table> getTablePath() {

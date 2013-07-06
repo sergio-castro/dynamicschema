@@ -84,4 +84,33 @@ public class ContextedTable extends AbstractTable {
 		return getFiltering().eval(this);
 	}
 	
+	
+	//Add
+	public List<String> getIDColumnNames(){
+		return table.getIDColumnNames();
+	}
+
+	public boolean isFromSameTableThan(ContextedTable table){
+		return table.getTable().equals(this.getTable());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return this.table.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return this.table.equals(obj);
+	}
+	
+	
+	
+	
 }

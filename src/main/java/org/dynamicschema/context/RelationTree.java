@@ -1,5 +1,6 @@
 package org.dynamicschema.context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,8 +23,12 @@ public abstract class RelationTree {
 	public abstract List<Table> getTablePath();
 	
 	public List<RelationTree> getFullPath() {
-		if(parent == null)
-			return Arrays.asList(this);
+		if(parent == null){
+//			return Arrays.asList(this);
+			List<RelationTree> list = new ArrayList<RelationTree>();
+			list.add(this);
+			return list;
+		}
 		else {
 			List<RelationTree> fullPath = getParent().getFullPath();
 			fullPath.add(this);

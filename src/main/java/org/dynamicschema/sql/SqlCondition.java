@@ -75,6 +75,20 @@ public class SqlCondition {
 		return this;
 	}
 	
+	public SqlCondition lEq(Object leftEquals, Object rightEquals) {
+		builder.append(leftEquals);
+		builder.append(" <= ");
+		builder.append(rightEquals);
+		return this;
+	}
+	
+	public SqlCondition gEq(Object leftEquals, Object rightEquals) {
+		builder.append(leftEquals);
+		builder.append(" >= ");
+		builder.append(rightEquals);
+		return this;
+	}
+	
 	public SqlCondition in(Object variable, String subquery) {
 		builder.append(variable);
 		builder.append(" IN (");

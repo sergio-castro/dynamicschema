@@ -20,13 +20,22 @@ public abstract class RelationCondition {
 		return eval(tables.toArray(new Table[]{}));
 	}
 	
+	/*
+	 * A given  Relation object (representing a binary relation)
+	 *  is going to override this method in order to customize the handling the join condition
+	 */
+	public SqlCondition eval(Table tab1, Table tab2) {
+		return new SqlCondition("");
+	}
+	
+	
 	public SqlCondition eval(Table ...tables) {
 		List<Class> paramClasses = new ArrayList<Class>();
 		Method m = null;
 		for(int i=0; i<tables.length; i++)
 			paramClasses.add(Table.class);
 		try {
-			m = this.getClass().getMethod(EVAL_METHOD_NAME, paramClasses.toArray(new Class[]{}));
+			m = this.getClass().getMethod(EVAL_METHOD_NAME, paramClasses.toArray(new Class[]{})); 
 		} catch (SecurityException e) {
 			throw(e);
 		} catch (NoSuchMethodException e) {
