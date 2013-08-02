@@ -1,5 +1,6 @@
 package org.dynamicschema.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +25,10 @@ public class RelationalContextManager {
 	private Map<Relation, Integer> occuredRelations; // holds relations already occured in the query
 	private Table baseTable ; //holds the base table of query : tables which called select()
 	private Map<Table, Integer> recursionVisited; // determines whether a table has appeared in a recursive relation
-	private List<Table> tables2Select; //By default, only columns of base Table are selected. 
-									// in case some additional columns should be selected,too , the table should be in this list
-	
 	private boolean inLazyQuery;
+	private Map<String, Integer> selectedTab; // did a given contexted table appeared in the query selection ?
+	private Map<ContextedTable,ContextedTable> tablesDependencies; //holds dependecies between selected tables
 	//end add
-
 
 	public RelationalContextManager() {
 		aliasesCounter = new HashMap<String, Integer>();
@@ -38,7 +37,11 @@ public class RelationalContextManager {
 		occuredRelations = new HashMap<Relation, Integer>();
 		recursionVisited = new HashMap<Table, Integer>();
 		inLazyQuery = false;
+		selectedTab = new HashMap<String, Integer>();
+		tablesDependencies = new HashMap<ContextedTable, ContextedTable>();
 	}
+
+	
 
 	private int getOffset() {
 		return offset;
@@ -53,6 +56,9 @@ public class RelationalContextManager {
 		return inLazyQuery;
 	}
 
+	
+
+
 	/**
 	 * @param inLazyQuery the inLazyQuery to set
 	 * 
@@ -63,21 +69,53 @@ public class RelationalContextManager {
 	}
 
 	/**
-	 * @param tables2Select the tables2Select to set
+	 * @return the tablesDependencies
 	 */
-	public void setTables2Select(List<Table> tables2Select) {
-		this.tables2Select = tables2Select;
+	public Map<ContextedTable, ContextedTable> getTablesDependencies() {
+		return tablesDependencies;
 	}
-
 	
 	/**
-	 * @return the tables2Select
+	 * register dependency between tables. There is a dependency where there exist a relation between 
+	 * table parent and child in the relational model
 	 */
-	public List<Table> getTables2Select() {
-		return tables2Select;
+	public void registerSelectDependency(ContextedTable parent, ContextedTable child){
+			this.tablesDependencies.put(parent, child);
 	}
 	
 	
+	/**
+	 * Register selection for this contexted table
+	 */
+	public void setSelectedCtxTable(ContextedTable table){
+		Integer flag = this.selectedTab.get(table.getAlias());
+		if(flag != null) 
+			throw new RuntimeException("Unpexcted: Attempt to flag a contexted table twice: "+ table.getAlias());
+		this.selectedTab.put(table.getAlias(), new Integer(1));
+		
+		flag = this.selectedTab.get(table);
+	}
+	
+	public void setUnSelectedCtxTable(ContextedTable table){
+		Integer flag = (Integer) this.selectedTab.get(table.getAlias());
+		if(flag == null) 
+			throw new RuntimeException("Unpexcted: Attempt to unflag an non selected table: "+ table.getAlias());
+		this.selectedTab.put(table.getAlias(), null);
+	}
+	
+	
+	/**
+	 * 
+	 * @param table
+	 * @return
+	 */
+	public boolean isSelectedInQuery(ContextedTable table){
+		Integer flag = this.selectedTab.get(table.getAlias());
+		if( flag == null)
+				return false;
+		return flag.intValue() == 1;
+	}
+
 
 	public void setVisitedRecursion(Table table){
 		Integer i = recursionVisited.get(table);
@@ -176,6 +214,10 @@ public class RelationalContextManager {
 	private int addOffset(int delta) {
 		return offset+=delta;
 	}
+	
+	private int decreaseOffset(int delta){
+		return offset-= delta;
+	}
 
 	public String newAliasName(String tableName) {
 		Integer occurences = aliasesCounter.get(tableName);
@@ -212,31 +254,23 @@ public class RelationalContextManager {
 		if(bindings != null)
 			notifyInLazySelect();	
 
-		if(canAddOffset(table, initialTableLazySelect))//updating offset at certain conditions
-			addOffset(table.getColumnModel().size());
+		//if(canAddOffset(table, initialTableLazySelect))//updating offset at certain conditions
+		addOffset(table.getColumnModel().size());
 
 		tableContext.setBindings(bindings);
 		return tableContext;
 	}
 
-	private boolean canAddOffset(Table table, Table initTabSelect){
-		
-		if(initTabSelect == null){ // in lazy Select
-			return getBaseTable() == null ||
-					aTable2SelectFirstOccurrence(table); //also depends on whether there are some additional columns whose columns has to be selected
-		}
-		return false;
+	
+	public void notifyColumnsRemoval(int nbColumns){
+		decreaseOffset(nbColumns);
 	}
 	
-	// Condition to add offset: table is in table2Select list and has not yet appeared in the query
-	private boolean aTable2SelectFirstOccurrence(Table table){
-		return tables2Select.contains(table) && getVisitedTableNode(table) == null;
-	}
 
 	
 	public Table getBaseTableContextedTable() {
 		TableContext baseTableContext = getRelationContext().getTableContext(getVisitedTableNode(getBaseTable()));
-		return new ContextedTable((DBTable)getBaseTable(), baseTableContext.getAlias(), baseTableContext.getBindings());
+		return new ContextedTable((DBTable)getBaseTable(), baseTableContext.getAlias(), baseTableContext.getOffset(), baseTableContext.getBindings());
 	}
 
 

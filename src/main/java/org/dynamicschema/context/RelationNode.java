@@ -14,6 +14,8 @@ public class RelationNode extends RelationTree {
 
 	private TableRelation tableRelation;
 	private int relationIndex; //index of the table relation in the List of TableRelations of the parent table
+	
+	private boolean markedAsLazy; //determine whether relation held by current node should be considered as lazy
 
 	//Addendum
 	private RelationalContextManager relContextManager;
@@ -36,7 +38,7 @@ public class RelationNode extends RelationTree {
 			TableNode  tableNode = null;
 			Table childTable = relMembers.get(i).getTable();
 			if(tableAlreadyVisited(childTable)){
-				tableNode = getRelContextManager().getVisitedTableNode(childTable);
+//				tableNode = getRelContextManager().getVisitedTableNode(childTable);
 			}else{
 			//End Addendum
 				tableNode = new TableNode(this, childTable, i);
@@ -46,7 +48,7 @@ public class RelationNode extends RelationTree {
 		return children;
 	}
 
-
+	
 
 	/*
 	 * Determines whether this table correspond to one that has been visited before 
@@ -65,13 +67,13 @@ public class RelationNode extends RelationTree {
 	/**
 	 * @param relContextManager the relContextManager to set
 	 */
-	public void setRelContextManager(RelationalContextManager relContextManager) {
-		this.relContextManager = relContextManager;
-	}
-
-	public RelationalContextManager getRelContextManager(){
-		return this.relContextManager ;
-	}
+//	public void setRelContextManager(RelationalContextManager relContextManager) {
+//		this.relContextManager = relContextManager;
+//	}
+//
+//	public RelationalContextManager getRelContextManager(){
+//		return this.relContextManager ;
+//	}
 
 	public int getRelationIndex() {
 		return relationIndex;
@@ -117,6 +119,22 @@ public class RelationNode extends RelationTree {
 			}
 		}
 		return relationArgs;
+	}
+
+	/**
+	 *  A an eager relation can be faken to be seen as a lazy.
+	 *  When we are doing a traversal of lazy relations only, we do to want to fetch  entities eagerly if we do not want them 
+	 * @return the markedAsLazy
+	 */
+	public boolean isMarkedAsLazy() {
+		return markedAsLazy;
+	}
+
+	/**
+	 * @param markedAsLazy the markedAsLazy to set
+	 */
+	public void setMarkedAsLazy(boolean markedAsLazy) {
+		this.markedAsLazy = markedAsLazy;
 	}
 
 

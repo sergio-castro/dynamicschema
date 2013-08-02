@@ -17,6 +17,7 @@ import org.dynamicschema.sql.RelationCondition;
 import org.dynamicschema.sql.Sql;
 import org.dynamicschema.sql.SqlCondition;
 import org.dynamicschema.visitor.SchemaVisitor;
+import org.dynamicschema.visitor.context.QueryFilteringSpecifier;
 import org.dynamicschema.visitor.context.SelectBuilderEagerRelationsVisitor;
 import org.dynamicschema.visitor.context.SelectBuilderSpecificRelationVisitor;
 
@@ -105,38 +106,46 @@ public class DBTable extends AbstractTable {
 	}
 	
 	public ContextedQueryBuilder select() {
-		return select(new ArrayList<Table>());
+		return select(new ArrayList<Relation>());
 	}
 	
-	
-	//Relations to visit
-	public ContextedQueryBuilder restrictedSelect(List<Relation> relations2Visit){
-		return restrictedSelect(relations2Visit, new ArrayList<Table>());
+	public ContextedQueryBuilder select(List<Relation> relations2Visit){
+		return select(relations2Visit,null);
 	}
 	
-	public ContextedQueryBuilder restrictedSelect(List<Relation> relations2Visit, List<Table> tables2Select){
-		SelectBuilderEagerRelationsVisitor visitor = new SelectBuilderEagerRelationsVisitor(this, tables2Select, relations2Visit);
+	public ContextedQueryBuilder select(QueryFilteringSpecifier specifier){
+		return select(new ArrayList<Relation>(), specifier);
+	}
+	
+	public ContextedQueryBuilder select(List<Relation> relations2Visit, QueryFilteringSpecifier specifier){
+		SelectBuilderEagerRelationsVisitor visitor = new SelectBuilderEagerRelationsVisitor(this, relations2Visit);
+		visitor.setSpecifier(specifier);
 		visitor.visit();
 		return visitor.getQueryBuilder();
 	}
-	
-	//Addendum
-	public ContextedQueryBuilder select(List<Table> additinalTables2Select){
-		SelectBuilderEagerRelationsVisitor selectBuilderVisitor = new SelectBuilderEagerRelationsVisitor(this,additinalTables2Select);
-		selectBuilderVisitor.visit();
-		return selectBuilderVisitor.getQueryBuilder();
-	}
-	
+//Added 	
 
-	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings) {
-		return lazyRelationSelect(tableRelation, columnBindings, new ArrayList<Table>());
+	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings, QueryFilteringSpecifier specifier) {
+		return lazyRelationSelect(tableRelation, columnBindings, new ArrayList<Relation>(), specifier);
 	}
 	
-	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings, List<Table> tables) {
-		SelectBuilderSpecificRelationVisitor selectBuilderVisitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings,tables);
-		selectBuilderVisitor.visit();
-		return selectBuilderVisitor.getQueryBuilder();
+	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings) {
+		return lazyRelationSelect(tableRelation, columnBindings, new ArrayList<Relation>(), null);
 	}
+	
+	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings, List<Relation> relToTraverse) {
+		return lazyRelationSelect(tableRelation, columnBindings, relToTraverse, null);
+	}
+
+		
+	public ContextedQueryBuilder lazyRelationSelect(TableRelation tableRelation, Map<String, Object> columnBindings, List<Relation> relations2visit, QueryFilteringSpecifier specifier){
+		SelectBuilderSpecificRelationVisitor visitor = new SelectBuilderSpecificRelationVisitor(tableRelation, columnBindings);
+		visitor.setRelationsToTraverse(relations2visit);
+		visitor.setQueryFilteringSpecifier(specifier);
+		visitor.visit();
+		return visitor.getQueryBuilder();	
+	}
+
 
 	
 	public String insertStatement(Map<Column, Object> bindings) {

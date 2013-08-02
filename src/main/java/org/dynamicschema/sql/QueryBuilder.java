@@ -1,9 +1,7 @@
 package org.dynamicschema.sql;
 
-import java.sql.SQLData;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import com.google.common.base.Joiner;
 
@@ -22,6 +20,10 @@ public class QueryBuilder {
 	
 	public QueryBuilder addColumns(List<String> columnsNames) {
 		columns.addAll(columnsNames);
+		return this;
+	}
+	public QueryBuilder removeColumns(List<String> columnsNames){
+		columns.removeAll(columnsNames);
 		return this;
 	}
 	
@@ -85,7 +87,7 @@ public class QueryBuilder {
 		for (String col : columns) {
 			columnsWithAliases.add(col + " " + Sql.AS + " \"" + col + "\"");
 		}
-		return Joiner.on(", ").join(columnsWithAliases);
+		return Joiner.on(", \n").join(columnsWithAliases);
 	}
 	
 	public SqlCondition where() {
@@ -123,7 +125,7 @@ public class QueryBuilder {
 				joins(),
 				getWhereString(),
 				getOrderByString(), 
-				getGroupByString(), 
+				getGroupByString(),
 				getHavingString()
 		);
 		query.setLimit(limit);

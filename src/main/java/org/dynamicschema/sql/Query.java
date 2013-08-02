@@ -125,7 +125,7 @@ public class Query {
 	}
 
 	public String select() {
-		return SELECT + " " + DISTINCT + " " + columns;
+		return SELECT + " " + columns;
 	}
 	
 	public String from() {
@@ -182,8 +182,8 @@ public class Query {
 			SEPARATOR + from() + 
 			SEPARATOR + joinConditions() +
 			SEPARATOR + where() +
+			SEPARATOR + groupBy() + 
 			SEPARATOR + orderBy() + 
-			SEPARATOR + groupBy() +
 			SEPARATOR + having() + 
 			SEPARATOR + limit();
 	}

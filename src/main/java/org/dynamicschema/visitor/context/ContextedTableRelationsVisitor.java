@@ -1,6 +1,5 @@
 package org.dynamicschema.visitor.context;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.dynamicschema.context.RelationNode;
@@ -16,15 +15,15 @@ public class ContextedTableRelationsVisitor {
 	protected RelationalContextManager ctx;
 	private Fetching fetching; //only relations with this kind of fetching will be visited
 	private TableNode root;
-
+	
 	//Needed for specific relations visit
 	private List<Relation> relations2Visit;
-	private List<Relation> visited;
+
 	
 	public ContextedTableRelationsVisitor(Table table) {
-		this(table, null);
+		this(table, Fetching.EAGER);
 	}
-	
+
 
 	public ContextedTableRelationsVisitor(Table table, Fetching fetching) {
 		this.ctx = new RelationalContextManager();
@@ -54,21 +53,21 @@ public class ContextedTableRelationsVisitor {
 		}
 		return false;
 	}
-	
+
 
 
 	private boolean shouldStopVisiting(TableNode tableNode){
-		
+
 		if(inRecursiveRelation(tableNode)){
 			if(recursivelyVisited(tableNode))
 				return true;
-			
+
 		}else{
 			if(ctx.tableAlreadyVisited(tableNode.getTable()))
-					return true;
+				return true;
 		}
-		
-	
+
+
 		return false;
 	}
 
@@ -76,35 +75,35 @@ public class ContextedTableRelationsVisitor {
 
 		ctx.createTableContext(tableNode);
 		
-
-		
-		//Add
-		if(shouldRegisterVisitation(tableNode)){
-			if(shouldStopVisiting(tableNode))
-				return;	
-			ctx.setVisitedTable(tableNode.getTable(), tableNode);
-		}
-		
 		if(baseTable)
 			ctx.setBaseTable(tableNode.getTable());
-	
-		if(inRecursiveRelation(tableNode)){
-			ctx.setVisitedRecursion(tableNode.getTable());
-		}
 
 		if(baseTable)
 			onVisitBaseTable(tableNode);
 		else {
 			onVisitRelatedTable(tableNode);
-			if(tableNode.holdsBaseTable(ctx)) 
-				return;
+	
 		}
+
+		if(inRecursiveRelation(tableNode)){
+			ctx.setVisitedRecursion(tableNode.getTable());
+			if(ctx.isInLazyQuery())
+				ctx.setVisitedTable(tableNode.getTable(), tableNode);
+		}
+
+		//Add
+		if(shouldStopVisiting(tableNode))
+			return;	
+		ctx.setVisitedTable(tableNode.getTable(), tableNode);
+		
+
 		for(RelationNode relationNode : tableNode.getChildren()) { 
 			if(eligibleForVisitation(relationNode, tableNode)) { 
-				relationNode.setRelContextManager(ctx); //pass the context to the node 	
-				
-				Fetching relationFecthing = relationNode.getTableRelation().getFetching();
-				if(fetching==null || fetching.equals(relationFecthing)) {
+//				relationNode.setRelContextManager(ctx); //pass the context to the node 	
+				Fetching relationFecthing = getFetchingForRelationNode(relationNode);
+				if(fetching==null || fetching.equals(relationFecthing) || allowedForVisitation(relationNode)) {
+					if(traversedLazyRelation(relationFecthing, relationNode)) //stop if we reached the tableNode by traversing a relation with lazy fetching 
+						continue;
 					for(TableNode childTableNode : relationNode.getChildren()) {
 						visit(childTableNode, false);
 					}
@@ -113,31 +112,72 @@ public class ContextedTableRelationsVisitor {
 			}
 		}
 	}
+   
 
 
+	private boolean traversedLazyRelation(Fetching currFetching, RelationNode relationNode) {
+		TableNode parentTableNode = relationNode.getParentTable();
+		RelationNode parentRelNode = (RelationNode) parentTableNode.getParent();
+		if(parentRelNode == null) //in case the parent table was the base table
+			return false;
+		
+		boolean traversedLazyRel = parentRelNode.getTableRelation().getFetching().equals(Fetching.LAZY) || parentRelNode.isMarkedAsLazy();
+		//Can not traverse an eager relation after traversing a Lazy one. 
+		//
+		return currFetching != null && currFetching.equals(Fetching.EAGER) && traversedLazyRel;
+	}
 
-	private boolean eligibleForVisitation(RelationNode relationNode, TableNode tableNode){
-		return !relationExists(relationNode, tableNode.getFullPath()) //avoid cycles (for ex. recursive relations)
-					&& 
-						mayBeVisitedInRestrictedMode(relationNode);
+	/*
+	 * In need some cases, we need to transform the fecthing of a relation for overcoming the problem of traversing lazy relations
+	 * If we encounter an eager relation after traversing lazy relations, we transform the eager relation pretends to be a lazy one
+	 * so its columns are not traversed
+	 */
+	private Fetching getFetchingForRelationNode(RelationNode relationNode){
+		
+		Fetching fetch =  relationNode.getTableRelation().getFetching();
+		
+		if(fetch.equals(Fetching.EAGER)){
+			TableNode parentTableNode = relationNode.getParentTable();
+			RelationNode parentRelNode = (RelationNode) parentTableNode.getParent();
+			if(parentRelNode == null)
+				return fetch;
+			if(parentRelNode.getTableRelation().getFetching().equals(Fetching.LAZY)) {
+				relationNode.setMarkedAsLazy(true);
+				return Fetching.LAZY;
+			}
+		}
+		
+		return fetch;
 	}
 	
-	private boolean inRecursiveRelation(TableNode tableNode){
+	
 
-		if(tableNode.holdsBaseTable(ctx))
-			return false;
+
+	
+
+	private boolean eligibleForVisitation(RelationNode relationNode, TableNode tableNode){
+		return !relationExists(relationNode, tableNode.getFullPath()) ; //avoid cycles (for ex. recursive relations)
+				
+	}
+	
+	private boolean allowedForVisitation(RelationNode relationNode){
+		Relation rel = relationNode.getRelation();
+		if(getRelations2Visit().contains(rel))
+			return true;
+		
+		return false;
+	}
+
+	protected boolean inRecursiveRelation(TableNode tableNode){
 
 		RelationNode relNode = (RelationNode) tableNode.getParent();
-		
+
 		if(relNode == null)
-				return false;
-		
+			return false;
+
 		return relNode.getRelation().isBinaryRecursive();
 	}
 
-	private boolean shouldRegisterVisitation(TableNode tableNode){
-		return !tableNode.holdsBaseTable(ctx);
-	}
 
 	private boolean recursivelyVisited(TableNode tableNode ){
 		return  ctx.recursionAlreadyVisited(tableNode.getTable());
@@ -168,31 +208,17 @@ public class ContextedTableRelationsVisitor {
 	/**
 	 * @param relationsToVisit the set of relations to visit 
 	 */
-	public void setRelations2Visit(List<Relation> relationsToVisit) {
+	protected void setRelations2Visit(List<Relation> relationsToVisit) {
 		this.relations2Visit = relationsToVisit;
-		this.visited = new ArrayList<Relation>();
 	}
-	
-	
-	/*
-	 *  In case we are in a restricted selection, this determines whether a relation is allowed to 
-	 *  be traversed
+
+
+
+	/**
+	 * @return the relations2Visit
 	 */
-	private boolean mayBeVisitedInRestrictedMode(RelationNode relNode){
-		
-		if(this.relations2Visit == null) 
-				return true;
-		
-		Relation rel = relNode.getRelation();
-		if(this.visited.contains(rel)) 
-			return false;
-		
-		if(this.relations2Visit.contains(rel)){
-			this.visited.add(rel);
-			this.relations2Visit.remove(rel);
-			return true;
-		}
-		return false;
+	protected List<Relation> getRelations2Visit() {
+		return relations2Visit;
 	}
 
 }

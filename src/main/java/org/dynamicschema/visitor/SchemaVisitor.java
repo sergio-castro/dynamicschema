@@ -21,10 +21,11 @@ public interface SchemaVisitor {
 	
 	public abstract boolean doVisit(ColumnModel columnModel);
 	
-	public abstract void doVisit(Column column); //column is a leaf the tree representing the schema, so it does not make sense to return a boolean indicating if children should be visited
+	//column is a leaf in the tree representing the schema, so it does not make sense to return a boolean indicating if children should be visited
+
+	public abstract void doVisit(Column column); 
 	
 	public abstract boolean doVisit(RelationModel relationModel);
-	
-	public abstract void doVisit(Relation relation); //relation is a leaf the tree representing the schema, so it does not make sense to return a boolean indicating if children should be visited
-
+	//relation is a leaf in the tree representing the schema, so it does not make sense to return a boolean indicating if children should be visited
+	public abstract void doVisit(Relation relation); 
 }

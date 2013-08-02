@@ -74,7 +74,7 @@ public class TableNode extends RelationTree {
 	
 	public ContextedTable getContextedTable(RelationalContextManager ctx) {
 		TableContext tableContext = ctx.getRelationContext().getTableContext(this);
-		return new ContextedTable((DBTable)this.getTable(), tableContext.getAlias(), tableContext.getBindings());
+		return new ContextedTable((DBTable)this.getTable(), tableContext.getAlias(), tableContext.getOffset(), tableContext.getBindings());
 	}
 	
 }

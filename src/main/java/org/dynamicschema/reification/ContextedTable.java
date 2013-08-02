@@ -13,15 +13,18 @@ public class ContextedTable extends AbstractTable {
 	private DBTable table;
 	private String alias;
 	private Map<String, Object> bindings;
+	private int offset;
+	private String test;
 	
 	public ContextedTable(DBTable table, String alias) {
-		this(table, alias, new HashMap<String, Object>());
+		this(table, alias, 0, new HashMap<String, Object>());
 	}
 	
-	public ContextedTable(DBTable table, String alias, Map<String, Object> bindings) {
+	public ContextedTable(DBTable table, String alias, int offset, Map<String, Object> bindings) {
 		this.table = table;
 		this.alias = alias;
 		this.bindings = bindings;
+		this.offset = offset;
 	}
 
 	public DBTable getTable() {
@@ -42,8 +45,19 @@ public class ContextedTable extends AbstractTable {
 	}
 
 
-	
+	public void setTest(String val){
+		this.test = val;
+	}
+	public String getTest(){
+		return test;
+	}
 
+	/**
+	 * @return the offset
+	 */
+	public int getOffset() {
+		return offset;
+	}
 
 	@Override
 	public ColumnModel getColumnModel() {

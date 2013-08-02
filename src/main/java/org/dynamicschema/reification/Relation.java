@@ -17,17 +17,19 @@ public class Relation {
 	private RelationCondition condition;
 	private List<RelationMember> relationMembers;
 	private List<Fetching> fetchings;
+	
+	private boolean changeableToOneToOneRelationRuntime; //determine if a relation becomes a OneToOne at runtime
 
 
-	private static List<Fetching> defaultFetchings(List<RelationMember> relationMembers) {
+	private static List<Fetching> defaultFetchings(List<RelationMember> relationMembers, boolean oneToOne) {
 		List<Fetching> fetchings = new ArrayList<Fetching>();
 		for(int i = 0; i<relationMembers.size(); i++) {
-			fetchings.add(defaultFetching(relationMembers, i));
+			fetchings.add(defaultFetching(relationMembers, i, oneToOne));
 		}
 		return fetchings;
 	}
 
-	private static Fetching defaultFetching(List<RelationMember> relationMembers, int pos) {
+	private static Fetching defaultFetching(List<RelationMember> relationMembers, int pos, boolean oneToOne) {
 		if(relationMembers.size() > 2) //terciary or bigger relationship
 			return Fetching.LAZY;
 		String targetTableName = relationMembers.get(pos).getTable().getName();
@@ -36,15 +38,29 @@ public class Relation {
 				continue;
 			if(relationMembers.get(i).getTable().getName().equals(targetTableName)) //recursive relationship
 				return Fetching.LAZY;
-			if(!relationMembers.get(i).getOccurrence().equals(Occurrence.ONE)) //if there is at least one table with a cardinality different than ONE, then the fetching is lazy
+			
+			//if there is at least one table with a cardinality different than ONE, then the fetching is lazy
+			if(!relationMembers.get(i).getOccurrence().equals(Occurrence.ONE) && !oneToOne) 
 				return Fetching.LAZY;
 		}
 		return Fetching.EAGER;
 	}
 
 
+	/**
+	 * @return the changeToOneToOneRelationRuntime
+	 */
+	public boolean isChangeToOneToOneRelationRuntime() {
+		return changeableToOneToOneRelationRuntime;
+	}
+
 	public Relation(String name, List<RelationMember> relationMembers, RelationCondition condition) {
-		this(name, relationMembers, condition, defaultFetchings(relationMembers));
+		this(name, relationMembers, condition, defaultFetchings(relationMembers,false));
+	}
+	
+	public Relation(String name, List<RelationMember> relationMembers, RelationCondition condition, boolean changeToOneToOne) {
+		this(name, relationMembers, condition, defaultFetchings(relationMembers,changeToOneToOne));
+		this.changeableToOneToOneRelationRuntime = changeToOneToOne;
 	}
 
 	public Relation(String name, List<RelationMember> relationMembers, RelationCondition condition, List<Fetching> fetchings) {

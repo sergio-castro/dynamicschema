@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.dynamicschema.context.RelationNode;
 import org.dynamicschema.context.TableNode;
-import org.dynamicschema.reification.Table;
+import org.dynamicschema.reification.Relation;
 import org.dynamicschema.reification.TableRelation;
 
 public class SelectBuilderSpecificRelationVisitor extends SelectBuilderEagerRelationsVisitor {
@@ -14,12 +14,22 @@ public class SelectBuilderSpecificRelationVisitor extends SelectBuilderEagerRela
 	private int indexTableRelation; //the index of the TableRelation object in the list of TableRelations of the table
 	Map<String, Object> columnBindings;
 	
-	public SelectBuilderSpecificRelationVisitor(TableRelation tableRelation, Map<String, Object> columnBindings, List<Table> tables) {
-		super(tableRelation.getBaseTable(),tables);
+	public SelectBuilderSpecificRelationVisitor(TableRelation tableRelation, Map<String, Object> columnBindings) {
+		super(tableRelation.getBaseTable());
 		this.tableRelation = tableRelation;
 		this.columnBindings = columnBindings;
 		this.indexTableRelation = tableRelation.getBaseTable().getTableRelations().indexOf(tableRelation);
 	}
+	
+	
+	public void setRelationsToTraverse(List<Relation> relations2Traverse){
+		setRelations2Visit(relations2Traverse);
+	}
+	
+	public void setQueryFilteringSpecifier(QueryFilteringSpecifier specifier){
+		setSpecifier(specifier);
+	}
+	
 
 	public TableRelation getTableRelation() {
 		return tableRelation;
