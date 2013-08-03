@@ -8,6 +8,8 @@ import org.dynamicschema.sql.RelationCondition;
 import org.dynamicschema.sql.Sql;
 import org.dynamicschema.sql.SqlCondition;
 
+import com.sun.org.apache.xalan.internal.xsltc.dom.EmptyFilter;
+
 public class ContextedTable extends AbstractTable {
 
 	private DBTable table;
@@ -95,7 +97,21 @@ public class ContextedTable extends AbstractTable {
 	}
 	
 	public SqlCondition evalFiltering() {
-		return getFiltering().eval(this);
+		
+		RelationCondition filtering = getFiltering();
+		SqlCondition finalCond = null;
+		
+		if(filtering != null)
+			finalCond = filtering.eval(this);
+		else
+			finalCond = new SqlCondition("");
+		
+		List<RelationCondition> otherFilterings = table.getTableFilterings();
+		for (RelationCondition otherFilter : otherFilterings) {	
+			finalCond = new SqlCondition(otherFilter.eval(this).toString());
+		}
+		
+		return finalCond;
 	}
 	
 	
@@ -123,6 +139,7 @@ public class ContextedTable extends AbstractTable {
 	public boolean equals(Object obj) {
 		return this.table.equals(obj);
 	}
+	
 	
 	
 	

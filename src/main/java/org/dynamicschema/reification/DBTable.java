@@ -28,10 +28,12 @@ public class DBTable extends AbstractTable {
 	private ColumnModel columnModel;
 	private Schema schema;
 	private RelationCondition filtering;
+	private List<RelationCondition> moreFilterings; //other filterings that could be added 
 	
 	public DBTable(String tableName, ColumnModel columns) {
 		setName(tableName);
 		setColumnModel(columns);
+		moreFilterings = new ArrayList<RelationCondition>();
 	}
 
 	public String getName() {
@@ -82,23 +84,47 @@ public class DBTable extends AbstractTable {
 	}
 	
 	public RelationCondition getFiltering() {
+		
 		return filtering;
 	}
 
 	public SqlCondition evalFiltering() {
-		return getFiltering().eval(this);
+		
+		SqlCondition defFilteringCond = null;	
+		RelationCondition filtering = getFiltering();
+		
+		if(filtering != null)
+			defFilteringCond = filtering.eval(this);
+		else
+			defFilteringCond = new SqlCondition("");
+	
+		List<RelationCondition> otherFilterings= getTableFilterings();
+		for (RelationCondition cond : otherFilterings) {
+			defFilteringCond.and(cond.eval(this).toString());
+		}
+		
+		return defFilteringCond;
 	}
 	
 	public void setFiltering(RelationCondition filtering) {
 		this.filtering = filtering;
 	}
 	
-	public String filteringCondition(RelationalContextManager ctx) {
-		if (getFiltering() == null)
-				return "";
-		else
-			return getFiltering().eval(this).toString();
+	public void addMoreFiltering(RelationCondition newFilterFiltering){
+		moreFilterings.add(newFilterFiltering);
 	}
+	
+	public List<RelationCondition> getTableFilterings(){
+		return this.moreFilterings;
+	}
+
+	
+//	public String filteringCondition(RelationalContextManager ctx) {
+//		if (getFiltering() == null)
+//				return "";
+//		else
+//			return getFiltering().eval(this).toString();
+//	}
 	
 
 	public String getColumnName(Column column) {
@@ -260,6 +286,8 @@ public class DBTable extends AbstractTable {
 		}
 		return idNamesList;
 	}
+
+	
 
 
 

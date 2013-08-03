@@ -24,10 +24,12 @@ public interface Table {
 	public RelationCondition getFiltering();
 	
 	/**
-	 * The evaluation of the filtering condition in the context of the declaring table
+	 * The evaluation of the filtering condition(s) in the context of the declaring table
 	 * @return
 	 */
 	public SqlCondition evalFiltering();
+	
+
 	
 	/**
 	 * The bound column values (column names if there are no any bindings)

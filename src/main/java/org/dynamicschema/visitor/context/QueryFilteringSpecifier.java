@@ -23,11 +23,11 @@ public class QueryFilteringSpecifier {
 
 	
 	
-	public void addSpecificQueryFiltering(Relation relation, Table table, RelationCondition filtering){
-		addSpecificQueryFiltering(relation, table, filtering, null);
+	public void addQuerFiltering(Relation relation, Table table, RelationCondition filtering){
+		addQueryFiltering(relation, table, filtering, null);
 		
 	}
-	public void addSpecificQueryFiltering(Relation relation, Table table, RelationCondition filtering, String role){
+	public void addQueryFiltering(Relation relation, Table table, RelationCondition filtering, String role){
 		
 		String key = getKey(relation, table, role);
 		RelationCondition val = this.specificQueryFilterings.get(key);
