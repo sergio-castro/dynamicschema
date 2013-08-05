@@ -63,7 +63,7 @@ public class SelectBuilderEagerRelationsVisitor extends ContextedTableRelationsV
 		queryBuilder.addTable(contextedTable.fromClauseName());
 		List<String> colValues = contextedTable.getColumnValues(); 
 		queryBuilder.addColumns(colValues);
-		queryBuilder.addGroupBy(colValues.get(0));
+		queryBuilder.addGroupBy(colValues);
 		queryBuilder.addOrderBy(colValues.get(0));
 		queryBuilder.addWhere(contextedTable.evalFiltering()); //will be global filtering for all generated queries (=> depend on context)
 		ctx.setSelectedCtxTable((ContextedTable)contextedTable);

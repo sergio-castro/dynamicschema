@@ -96,7 +96,7 @@ public class DBTable extends AbstractTable {
 		if(filtering != null)
 			defFilteringCond = filtering.eval(this);
 		else
-			defFilteringCond = new SqlCondition("");
+			defFilteringCond = new SqlCondition();
 	
 		List<RelationCondition> otherFilterings= getTableFilterings();
 		for (RelationCondition cond : otherFilterings) {
@@ -107,7 +107,21 @@ public class DBTable extends AbstractTable {
 	}
 	
 	public void setFiltering(RelationCondition filtering) {
+		
+//		if(this.name.equals("Language")){
+//			System.out.println("BEWARE SETTING FILTERING IN Language");
+//		}
+		
 		this.filtering = filtering;
+	}
+	
+	public void resetFilterings(RelationCondition emptyFiltering){
+		setFiltering(emptyFiltering);
+		int sizeOtherFilterings = moreFilterings.size();
+		for (int i = 0; i < sizeOtherFilterings; i++) {
+			moreFilterings.remove(i);
+		}
+		
 	}
 	
 	public void addMoreFiltering(RelationCondition newFilterFiltering){

@@ -64,6 +64,12 @@ public class QueryBuilder {
 		return this;
 	}
 	
+	public QueryBuilder addGroupBy(List<String> groupByStrings){
+		groupBy.addAll(groupByStrings);
+		return this;
+	}
+	
+	
 	public QueryBuilder addHaving(SqlCondition havingCondition) {
 		if(havingCondition != null)
 			return addHaving(havingCondition.toString());

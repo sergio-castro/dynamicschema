@@ -254,8 +254,8 @@ public class RelationalContextManager {
 		if(bindings != null)
 			notifyInLazySelect();	
 
-		//if(canAddOffset(table, initialTableLazySelect))//updating offset at certain conditions
-		addOffset(table.getColumnModel().size());
+		if(bindings == null && initialTableLazySelect == null)
+			addOffset(table.getColumnModel().size());
 
 		tableContext.setBindings(bindings);
 		return tableContext;

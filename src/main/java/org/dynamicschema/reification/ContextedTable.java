@@ -104,7 +104,7 @@ public class ContextedTable extends AbstractTable {
 		if(filtering != null)
 			finalCond = filtering.eval(this);
 		else
-			finalCond = new SqlCondition("");
+			finalCond = new SqlCondition();
 		
 		List<RelationCondition> otherFilterings = table.getTableFilterings();
 		for (RelationCondition otherFilter : otherFilterings) {	

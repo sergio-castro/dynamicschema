@@ -121,9 +121,14 @@ public class ContextedTableRelationsVisitor {
 		if(parentRelNode == null) //in case the parent table was the base table
 			return false;
 		
-		boolean traversedLazyRel = parentRelNode.getTableRelation().getFetching().equals(Fetching.LAZY) || parentRelNode.isMarkedAsLazy();
-		//Can not traverse an eager relation after traversing a Lazy one. 
-		//
+		boolean  parentRelIsLazy = parentRelNode.getTableRelation().getFetching().equals(Fetching.LAZY);
+		
+		if(startedALazySelect(parentRelNode))
+			return false;
+		
+		boolean traversedLazyRel = parentRelIsLazy || parentRelNode.isMarkedAsLazy();
+		//Can not traverse an eager relation after traversing a Lazy one except in a lazy Select. 
+		
 		return currFetching != null && currFetching.equals(Fetching.EAGER) && traversedLazyRel;
 	}
 
@@ -141,6 +146,10 @@ public class ContextedTableRelationsVisitor {
 			RelationNode parentRelNode = (RelationNode) parentTableNode.getParent();
 			if(parentRelNode == null)
 				return fetch;
+			
+			if(startedALazySelect(parentRelNode))
+				return fetch;
+			
 			if(parentRelNode.getTableRelation().getFetching().equals(Fetching.LAZY)) {
 				relationNode.setMarkedAsLazy(true);
 				return Fetching.LAZY;
@@ -150,6 +159,16 @@ public class ContextedTableRelationsVisitor {
 		return fetch;
 	}
 	
+	
+	/*
+	 * Determines whether we just initated a lazy select by checking if there is no 
+	 * other relation at the upper level of the current one
+	 */
+	private boolean startedALazySelect(RelationNode relNode){
+		TableNode parentTable = relNode.getParentTable();
+		boolean res = parentTable.getParent() == null && ctx.isInLazyQuery();
+		return res;
+	}
 	
 
 
