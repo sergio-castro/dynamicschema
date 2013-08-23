@@ -125,7 +125,7 @@ public class Query {
 	}
 
 	public String select() {
-		return SELECT + " " + columns;
+		return SELECT + " " + Sql.DISTINCT + " "+ columns;
 	}
 	
 	public String from() {

@@ -70,7 +70,9 @@ public class ContextedTableRelationsVisitor {
 
 		return false;
 	}
-
+/*
+ * Implements the relational tree traversal  
+ */
 	public void visit(TableNode tableNode, boolean baseTable) {
 
 		ctx.createTableContext(tableNode);
@@ -114,7 +116,9 @@ public class ContextedTableRelationsVisitor {
 	}
    
 
-
+/*
+ * Determines whether we reached the current relation node through a lazy relation in the past
+ */
 	private boolean traversedLazyRelation(Fetching currFetching, RelationNode relationNode) {
 		TableNode parentTableNode = relationNode.getParentTable();
 		RelationNode parentRelNode = (RelationNode) parentTableNode.getParent();

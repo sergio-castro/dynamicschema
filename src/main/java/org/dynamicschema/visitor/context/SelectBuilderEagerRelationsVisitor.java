@@ -63,7 +63,7 @@ public class SelectBuilderEagerRelationsVisitor extends ContextedTableRelationsV
 		queryBuilder.addTable(contextedTable.fromClauseName());
 		List<String> colValues = contextedTable.getColumnValues(); 
 		queryBuilder.addColumns(colValues);
-		queryBuilder.addGroupBy(colValues);
+//		queryBuilder.addGroupBy(colValues);
 		queryBuilder.addOrderBy(colValues.get(0));
 		queryBuilder.addWhere(contextedTable.evalFiltering()); //will be global filtering for all generated queries (=> depend on context)
 		ctx.setSelectedCtxTable((ContextedTable)contextedTable);
@@ -104,7 +104,9 @@ public class SelectBuilderEagerRelationsVisitor extends ContextedTableRelationsV
 		handleJoining(relationNode, joinedTables, sqlCondition);
 	}
 	
-	
+	/*
+	 * Stores entities dependencies  
+	 */
 	private void registerSelectDependency(RelationNode relNode){
 		TableNode parentTabNode = relNode.getParentTable();
 		ContextedTable parentCtxTab = parentTabNode.getContextedTable(ctx);
@@ -203,7 +205,7 @@ public class SelectBuilderEagerRelationsVisitor extends ContextedTableRelationsV
 	}
 	
 	/*
-	 * 
+	 * Handles the joining between tables
 	 */
 	private void  handleJoining(RelationNode relationNode, List<Table> joinedTables, SqlCondition sqlCondition){
 
