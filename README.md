@@ -1,7 +1,7 @@
-dynamicschema
+DynamicSchema
 =============
 
-DynamicSchema is a lightweight framework for interacting with context oriented databases in mobile (Android) applications.
+DynamicSchema is a lightweight persistency framework for interacting with context oriented databases in mobile (Android) applications.
 
 
 **Publications:**
